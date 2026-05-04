@@ -41,15 +41,55 @@
     </header>
 
     <section class="max-w-6xl mx-auto px-6 py-12">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+        <div id="portfolio-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
             
-            <div class="group cursor-pointer fade-in-up" style="animation-delay: 0.2s;">
+        <!-- <div class="group cursor-pointer fade-in-up" style="animation-delay: 0.2s;">
                 <div class="aspect-[4/5] bg-white overflow-hidden mb-4 relative shadow-sm">
                     <img src="images/art1.jpg" alt="Art 1" class="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0 group-hover:opacity-100 transition duration-700 ease-in-out transform group-hover:scale-105">
                 </div>
                 <h3 class="text-lg text-stone-800 font-normal">Morning Haze</h3>
-                <p class="text-xs text-stone-400 mt-1">Digital Illustration</p>
+                <p class="text-xs text-stone-400 mt-1">Digital Illustration</p> -->
             </div>
+        <!-- ========================================== -->
+        <!-- 以下是負責抓資料、並動態「印出」卡片的 JavaScript -->
+        <!-- ========================================== -->
+        <script>
+        // 1. 填入妳剛剛在 Google 成功測試的那串網址
+        const API_URL = "https://script.google.com/macros/s/AKfycbzR7pUepFVBUWQi2C9w75OoSux4i5LgaxR8v9Qn-FnM79mt-mpVYrVTdDDvKhhRAM4l/exec";
+        
+        // 2. 找到上面那個叫做 portfolio-container 的空盒子
+        const container = document.getElementById("portfolio-container"); 
+
+        // 3. 去 Google Sheets 抓資料
+        fetch(API_URL)
+            .then(response => response.json())
+            .then(data => {
+            
+            // data 就是妳試算表裡的所有作品資料。
+            // 下面這行 forEach 的意思是：「針對試算表裡的『每一行』資料，做以下動作」
+            data.forEach(item => {
+                
+                // 4. 這就是「放在 JavaScript 裡的動態卡片」！
+                // 我們用反引號 ` 把妳設計的 HTML 包起來，並把資料用 ${} 塞進去
+                const cardHTML = `
+                <div class="group cursor-pointer fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="aspect-[4/5] bg-white overflow-hidden mb-4 relative shadow-sm">
+                        <img src="${item.ImageURL}" alt="${item.ProjectName}" class="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0 group-hover:opacity-100 transition duration-700 ease-in-out transform group-hover:scale-105">
+                    </div>
+                    <h3 class="text-lg text-stone-800 font-normal">${item.ProjectName}</h3>
+                    <p class="text-xs text-stone-400 mt-1">${item.Description}</p>
+                </div>
+                `;
+                
+                // 5. 把做好的這張卡片，丟進空盒子裡。然後迴圈會繼續做下一張，直到資料跑完。
+                container.innerHTML += cardHTML;
+            });
+            
+            })
+            .catch(error => {
+            console.error("載入失敗：", error);
+            });
+        </script>
 
             </div>
     </section>
