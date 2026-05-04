@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品詳情 | moori.</title>
+    <!-- 引入妳的 Tailwind 與 CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="antialiased text-stone-800 bg-stone-50">
+
+    <!-- 這是用來放詳細內容的空盒子 -->
+    <main id="project-detail-container" class="max-w-4xl mx-auto px-6 py-20">
+        <p class="text-stone-400">正在載入作品資訊...</p>
+    </main>
+
+    <!-- 所有的 JavaScript 都要包在 script 標籤裡面 -->
+    <script>
+        // 1. 妳剛剛寫的很棒的抓 ID 邏輯
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentId = urlParams.get('id');
+
+        // 2. 貼上妳的 Google Sheets API 網址
+        const API_URL = "妳的_GOOGLE_SHEETS_網頁應用程式_URL";
+
+        const container = document.getElementById("project-detail-container");
+
+        // 如果網址沒有提供 ID，提早結束
+        if (!currentId) {
+            container.innerHTML = `<p>找不到該作品。請回首頁重新點擊。</p>`;
+        } else {
+            // 3. 去試算表抓資料
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    // 4. 從所有資料中，找出 ID 符合的「那一個作品」
+                    const project = data.find(item => item.ID == currentId);
+
+                    if (project) {
+                        // 5. 把找到的作品資料，套進 HTML 排版裡
+                        container.innerHTML = `
+                            <a href="index.html" class="text-sm text-stone-500 hover:text-stone-800 mb-8 inline-block transition">← 回到首頁</a>
+                            <h1 class="text-3xl font-light mb-4">${project.ProjectName}</h1>
+                            <p class="text-stone-500 mb-8">${project.Description}</p>
+                            <img src="${project.ImageURL}" class="w-full rounded-md shadow-sm mb-12">
+                            
+                            <!-- 假設妳試算表有新增 ProcessText 欄位放創作過程 -->
+                            <div class="prose max-w-none text-stone-600 leading-relaxed">
+                                ${project.ProcessText ? project.ProcessText : ''}
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = `<p>找不到這筆作品資料，請確認試算表裡的 ID 是否正確。</p>`;
+                    }
+                })
+                .catch(error => {
+                    console.error("載入失敗：", error);
+                    container.innerHTML = `<p>載入失敗，請稍後再試。</p>`;
+                });
+        }
+    </script>
+</body>
+</html>
