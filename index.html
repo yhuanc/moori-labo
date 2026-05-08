@@ -54,43 +54,67 @@
         <!-- 以下是負責抓資料、並動態「印出」卡片的 JavaScript -->
         <!-- ========================================== -->
         <script>
-        // 1. 填入妳剛剛在 Google 成功測試的那串網址
-        const API_URL = "https://script.google.com/macros/s/AKfycbzR7pUepFVBUWQi2C9w75OoSux4i5LgaxR8v9Qn-FnM79mt-mpVYrVTdDDvKhhRAM4l/exec";
-        
-        // 2. 找到上面那個叫做 portfolio-container 的空盒子
-        const container = document.getElementById("portfolio-container"); 
+            const API_URL = "https://script.google.com/macros/s/AKfycbwAuHyTZNeobDQQVyrxt22y5Mm5J7IWJXBOsYOUoP6ui2lANlJ6IZMPCX0kKZt262uO/exec";
 
-        // 3. 去 Google Sheets 抓資料
-        fetch(API_URL)
+            fetch(API_URL)
             .then(response => response.json())
             .then(data => {
-            
-            // data 就是妳試算表裡的所有作品資料。
-            // 下面這行 forEach 的意思是：「針對試算表裡的『每一行』資料，做以下動作」
-            data.forEach(item => {
-                
-                // 4. 這就是「放在 JavaScript 裡的動態卡片」！
-                // 我們用反引號 ` 把妳設計的 HTML 包起來，並把資料用 ${} 塞進去
-                // 注意 href 的地方，這會讓每張卡片擁有專屬網址，如 project.html?id=1
-                const cardHTML = `
-                <a href="project.html?id=${item.ID}" class="block group cursor-pointer fade-in-up" style="animation-delay: 0.2s;">
-                    
-                    <div class="aspect-[4/5] bg-white overflow-hidden mb-4 relative shadow-sm">
-                        <img src="${item.ImageURL}" alt="${item.ProjectName}" class="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0 group-hover:opacity-100 transition duration-700 ease-in-out transform group-hover:scale-105">
-                    </div>
-                    <h3 class="text-lg text-stone-800 font-normal">${item.ProjectName}</h3>
-                    <p class="text-xs text-stone-400 mt-1">${item.Description}</p>
+                // 💡 data 現在長這樣： { "Projects": [...], "Illustrations": [...], "Courses": [...] }
+                console.log("成功抓到全站資料：", data);
 
-                </a>
-                `;
-                
-                // 5. 把做好的這張卡片，丟進空盒子裡。然後迴圈會繼續做下一張，直到資料跑完。
-                container.innerHTML += cardHTML;
-            });
-            
+                // --- 1. 渲染 Selected Works (專案區塊) ---
+                const projectsContainer = document.getElementById("projects-container");
+                if (data.Projects) {
+                    projectsContainer.innerHTML = ""; // 清空載入中文字
+                    data.Projects.forEach(item => {
+                        projectsContainer.innerHTML += `
+                            <a href="project.html?id=${item.ID}" class="group block fade-in-up">
+                                <div class="aspect-[16/9] mb-6 overflow-hidden bg-stone-200">
+                                    <img src="${item.ProjectImg}" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+                                </div>
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 class="text-xl font-light text-stone-800">${item.ProjectName}</h3>
+                                        <p class="text-xs text-stone-400 mt-1 uppercase tracking-widest">${item.Category}</p>
+                                    </div>
+                                    <span class="text-xs text-stone-400 font-mono">${item.Date || ''}</span>
+                                </div>
+                            </a>
+                        `;
+                    });
+                }
+
+                // --- 2. 渲染 Illustrations (插畫區塊) ---
+                const illustrationsContainer = document.getElementById("illustrations-container");
+                if (data.Illustrations) {
+                    illustrationsContainer.innerHTML = "";
+                    data.Illustrations.forEach(item => {
+                        illustrationsContainer.innerHTML += `
+                            <div class="aspect-square bg-stone-200 overflow-hidden group cursor-crosshair">
+                                <img src="${item.IllusImg}" alt="${item.IllusTitle}" class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-500">
+                            </div>
+                        `;
+                    });
+                }
+
+                // --- 3. 渲染 Art Courses (課程區塊) ---
+                const coursesContainer = document.getElementById("courses-container");
+                if (data.Courses) {
+                    coursesContainer.innerHTML = "";
+                    data.Courses.forEach(item => {
+                        coursesContainer.innerHTML += `
+                            <div class="bg-white p-8 border border-stone-100 shadow-sm">
+                                <span class="text-[10px] tracking-widest text-stone-400 uppercase">${item.Status}</span>
+                                <h3 class="text-lg font-normal mt-2 mb-4">${item.CourseName}</h3>
+                                <p class="text-sm text-stone-500 leading-relaxed mb-6">${item.CourseInfo}</p>
+                                <a href="${item.ApplyLink}" target="_blank" class="text-xs border-b border-stone-800 pb-1 hover:text-stone-400 hover:border-stone-400 transition">LEARN MORE</a>
+                            </div>
+                        `;
+                    });
+                }
             })
             .catch(error => {
-            console.error("載入失敗：", error);
+                console.error("哎呀，資料抓取失敗：", error);
             });
         </script>
 
