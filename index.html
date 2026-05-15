@@ -114,14 +114,26 @@
                 const type = item.Type ? item.Type.toLowerCase().trim() : '';
 
                 if (type === 'image') {
+                    // 形式 1: Image + Title (修復遮罩消失 Bug，並套用精準數值 Padding)
                     illustrationsContainer.innerHTML += `
                         <a href="illustration.html?id=${item.ID}" class="block relative group aspect-square bg-stone-200 overflow-hidden cursor-crosshair fade-in-up">
                             <img src="${item.IllusImg}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-700">
-                            <div class="absolute inset-0 bg-stone-900/30 opacity-0 group-hover:opacity-100 transition duration-500 flex flex-col items-center justify-center pointer-events-none">
-                                <span class="text-white text-xs tracking-widest uppercase border border-white/50 px-4 py-2 bg-stone-900/20 backdrop-blur-sm text-center">
-                                    <span class="block">${item.IllusTitle || ''}</span>
-                                    ${item.Year ? `<span class="block text-[9px] mt-1 opacity-70">${item.Year}</span>` : ''}
-                                </span>
+                            
+                            <div class="absolute inset-0 bg-stone-900/20  opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none">
+                                
+                                <div class="absolute top-0 left-0 pt-[15px] pl-[15px] text-left w-full">
+                                    <span class="text-white text-xs tracking-widest uppercase font-medium">
+                                        ${item.IllusTitle || ''}
+                                    </span>
+                                </div>
+
+                                ${item.Year ? `
+                                <div class="absolute bottom-0 left-0 pb-[15px] pl-[15px] text-left w-full">
+                                    <span class="text-white text-[10px] opacity-80 font-mono tracking-wider">
+                                        ${item.Year}
+                                    </span>
+                                </div>
+                                ` : ''}
                             </div>
                         </a>
                     `;
