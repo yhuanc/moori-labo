@@ -46,9 +46,11 @@
         
         <section class="mb-32">
             <h2 class="text-xs tracking-widest text-stone-400 mb-8 uppercase border-b border-stone-200 pb-2">Illustrations</h2>
-            <div id="illustrations-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            
+            <div id="illustrations-container" class="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <p class="text-stone-400 text-sm">插畫載入中...</p>
             </div>
+            <!-- 小提醒： sheet 工作表中，只有 Type 填寫為 Image 的那一列，才需要填寫 ID（例如 illus-01、illus-02）。填寫 Text 或 Blank 的列因為不能點擊，所以 ID 留空即可。 -->
         </section>
 
         <section class="mb-32">
@@ -107,17 +109,43 @@
             }
         }
 
-        // --- 第二部分：處理 Illustrations (插畫區塊) ---
-        // (註：我們之後會把這區改成妳手稿中的「5列藝術網格」，目前先維持現狀測試連線)
+        // --- 🌟 第二部分：處理 Illustrations (精確策展網格) ---
         const illustrationsContainer = document.getElementById("illustrations-container");
         if (data.Illustrations && illustrationsContainer) {
-            illustrationsContainer.innerHTML = "";
-            data.Illustrations.forEach(item => {
-                illustrationsContainer.innerHTML += `
-                    <div class="aspect-square bg-stone-200 overflow-hidden group cursor-crosshair">
-                        <img src="${item.IllusImg}" alt="${item.IllusTitle}" class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-500">
-                    </div>
-                `;
+            illustrationsContainer.innerHTML = ""; // 清空載入中文字
+
+            data.Illustrations.forEach((item) => {
+                // 將 Type 轉成小寫，避免大小寫打錯
+                const type = item.Type ? item.Type.toLowerCase().trim() : '';
+
+                if (type === 'image') {
+                    // 形式 1: Image + Title (有加上 ID 連結，並修正了抓取 IllusImg 和 IllusTitle)
+                    illustrationsContainer.innerHTML += `
+                        <a href="illustration.html?id=${item.ID}" class="block relative group aspect-square bg-stone-200 overflow-hidden cursor-crosshair fade-in-up">
+                            <img src="${item.IllusImg}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-700">
+                            <div class="absolute inset-0 bg-stone-900/30 opacity-0 group-hover:opacity-100 transition duration-500 flex flex-col items-center justify-center pointer-events-none">
+                                <span class="text-white text-xs tracking-widest uppercase border border-white/50 px-4 py-2 bg-stone-900/20 backdrop-blur-sm text-center">
+                                    <span class="block">${item.IllusTitle || ''}</span>
+                                    ${item.Year ? `<span class="block text-[9px] mt-1 opacity-70">${item.Year}</span>` : ''}
+                                </span>
+                            </div>
+                        </a>
+                    `;
+                } else if (type === 'text') {
+                    // 形式 2: 純文字敘述 (修正了抓取 IllusDescription)
+                    illustrationsContainer.innerHTML += `
+                        <div class="aspect-square flex flex-col justify-center p-6 fade-in-up">
+                            <p class="text-xs text-stone-500 tracking-wide leading-relaxed text-center md:text-left">
+                                ${item.IllusDescription || ''}
+                            </p>
+                        </div>
+                    `;
+                } else if (type === 'blank') {
+                    // 形式 3: 空白格子
+                    illustrationsContainer.innerHTML += `
+                        <div class="aspect-square hidden md:block"></div>
+                    `;
+                }
             });
         }
 
