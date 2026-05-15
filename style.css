@@ -1,26 +1,25 @@
-/* 全站字體設定：使用 Outfit */
+/* 1. 全站基礎設定 */
 body {
+    /* 全站預設字型：Outfit */
     font-family: 'Outfit', sans-serif;
-    background-color: #FAFAF9; /* 暖石色背景 */
+    
+    /* 這兩行能讓 Mac/iOS 上的字體渲染更滑順銳利，高級感必備 */
+    -webkit-font-smoothing: antialiased; 
+    -moz-osx-font-smoothing: grayscale;
+    
+    background-color: #FAFAF9; /* 暖石色背景 (Section 02 網格區會用到) */
     color: #44403C; /* 暖深灰文字 */
-    overflow-x: hidden;
+    overflow-x: hidden; /* 確保不會出現醜醜的左右捲動軸 */
 }
 
-/* 針對 H1 大標題的特別設定：極細 */
-h1.main-title {
-    font-weight: 200; /* Extra Light */
-    letter-spacing: -0.02em;
+/* 2. 標題設定：專屬使用 Ofelia */
+/* 只要是 h1 到 h3，或者妳特別加上 .font-ofelia 的地方，都會換成 Ofelia */
+h1, h2, h3, .font-ofelia {
+    font-family: 'ofelia-text', sans-serif;
+    /* font-family: 'Outfit', sans-serif; */
 }
 
-/* 其他標題設定 */
-h2, h3, .vibe-font {
-    font-weight: 400;
-    letter-spacing: 0.02em;
-}
-
-/* ----------------------------------
-   背景霧氣動畫 (The Mist Effect)
-   ---------------------------------- */
+/* 背景霧氣動畫 (The Mist Effect) */
 .mist-orb {
     position: absolute;
     border-radius: 50%;
@@ -56,9 +55,7 @@ h2, h3, .vibe-font {
     100% { transform: translate(0, 0) scale(1); }
 }
 
-/* ----------------------------------
-   文字進場動畫
-   ---------------------------------- */
+/* 文字進場動畫 */
 .fade-in-up {
     animation: fadeInUp 1.2s ease-out forwards;
     opacity: 0;
