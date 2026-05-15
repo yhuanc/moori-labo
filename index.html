@@ -8,7 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <link rel="stylesheet" href="https://use.typekit.net/kop3xiw.css">
-
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="antialiased selection:bg-stone-200">
@@ -21,27 +20,28 @@
     <header id="hero-header" class="relative w-full h-screen flex justify-center bg-stone-200 bg-cover bg-center bg-no-repeat" 
         style="background-image: url('https://github.com/yhuanc/moori-labo/blob/master/images/mooriPF_BG.JPG?raw=true');">
     
-    <div class="absolute inset-0 bg-gradient-to-b from-stone-900/20 via-transparent to-stone-900/40 pointer-events-none"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-stone-900/20 via-transparent to-stone-900/40 pointer-events-none"></div>
 
-    <div class="relative z-10 flex flex-col justify-between h-full pt-12 md:pt-20">
-        
-        <nav class="flex flex-col space-y-3 ml-[0vw] md:ml-[0.4vw]">
-            <a id="nav-work" href="#work" class="text-white/80 hover:text-white/30 text-sm md:text-base tracking-[0.2em] uppercase transition w-max">Work</a>
-            <a id="nav-about" href="about.html" class="text-white/80 hover:text-white/30 text-sm md:text-base tracking-[0.2em] uppercase transition w-max">About</a>
-            <a id="nav-contact" href="#contact" class="text-white/80 hover:text-white/30 text-sm md:text-base tracking-[0.2em] uppercase transition w-max">Contact</a>
-        </nav>
+        <div class="relative z-10 flex flex-col justify-between h-full pt-12 md:pt-20">
+            
+            <nav class="flex flex-col space-y-3 ml-[0vw] md:ml-[0.4vw]">
+                <a id="nav-work" href="#work" class="text-white/80 hover:text-white/30 text-sm md:text-base tracking-[0.2em] uppercase transition w-max">Work</a>
+                <a id="nav-about" href="about.html" class="text-white/80 hover:text-white/30 text-sm md:text-base tracking-[0.2em] uppercase transition w-max">About</a>
+                <a id="nav-contact" href="#contact" class="text-white/80 hover:text-white/30 text-sm md:text-base tracking-[0.2em] uppercase transition w-max">Contact</a>
+            </nav>
 
-        <div class="pb-0 translate-y-[6.5%]">
-            <p id="hero-subtitle" class="text-white/70 text-sm md:text-base tracking-[0.2em] uppercase mb-0 md:mb-[-40px] ml-[0vw] md:ml-[0.4vw]">
-                Light in the Mist.
-            </p>
-            <h1 class="text-[28vw] md:text-[22vw] text-[#fafafa]/80 leading-none tracking-tighter drop-shadow-[0_10px_20px_rgba(0,0,0,0.04)] -ml-[2.5vw] md:-ml-[1.5vw]" 
-                style="font-family: 'ofelia-text', sans-serif; font-weight: 700 !important;">
-                <span id="hero-title">moori</span><span class="text-[#fafafa]/70">.</span>
-            </h1>
+            <div class="pb-0 translate-y-[6.5%]">
+                <p id="hero-subtitle" class="text-white/70 text-sm md:text-base tracking-[0.2em] uppercase mb-0 md:mb-[-40px] ml-[0vw] md:ml-[0.4vw]">
+                    Light in the Mist.
+                </p>
+                <h1 class="text-[28vw] md:text-[22vw] text-[#fafafa]/80 leading-none tracking-tighter drop-shadow-[0_10px_20px_rgba(0,0,0,0.04)] -ml-[2.5vw] md:-ml-[1.5vw]" 
+                    style="font-family: 'ofelia-text', sans-serif; font-weight: 700 !important;">
+                    <span id="hero-title">moori</span><span class="text-[#fafafa]/70">.</span>
+                </h1>
+            </div>
         </div>
-    </div>
-</header>
+    </header>
+
     <main class="max-w-6xl mx-auto px-6 pt-[15vw] pb-12 relative z-10">
         
         <section class="mb-32">
@@ -50,8 +50,7 @@
             <div id="illustrations-container" class="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <p class="text-stone-400 text-sm">插畫載入中...</p>
             </div>
-            <!-- 小提醒： sheet 工作表中，只有 Type 填寫為 Image 的那一列，才需要填寫 ID（例如 illus-01、illus-02）。填寫 Text 或 Blank 的列因為不能點擊，所以 ID 留空即可。 -->
-        </section>
+            </section>
 
         <section class="mb-32">
             <h2 class="text-xs tracking-widest text-stone-400 mb-8 uppercase border-b border-stone-200 pb-2">Projects</h2>
@@ -84,7 +83,6 @@
 
         // --- 🌟 第一部分：處理 LandingArea (首頁氛圍設定) ---
         if (data.LandingArea) {
-            // 建立對照表：'Sheets裡的Key': 'HTML裡的ID'
             const landingMap = {
                 'HeroSubtitle': 'hero-subtitle',
                 'HeroTitle': 'hero-title',
@@ -93,7 +91,6 @@
                 'NavContact': 'nav-contact'
             };
 
-            // 自動填充文字
             Object.keys(landingMap).forEach(key => {
                 const setting = data.LandingArea.find(item => item.Key === key);
                 const element = document.getElementById(landingMap[key]);
@@ -102,7 +99,6 @@
                 }
             });
 
-            // 特別處理背景圖 (Header Background)
             const heroImg = data.LandingArea.find(item => item.Key === 'HeroImage');
             if (heroImg && heroImg.Value) {
                 document.getElementById("hero-header").style.backgroundImage = `url('${heroImg.Value}')`;
@@ -115,11 +111,9 @@
             illustrationsContainer.innerHTML = ""; // 清空載入中文字
 
             data.Illustrations.forEach((item) => {
-                // 將 Type 轉成小寫，避免大小寫打錯
                 const type = item.Type ? item.Type.toLowerCase().trim() : '';
 
                 if (type === 'image') {
-                    // 形式 1: Image + Title (有加上 ID 連結，並修正了抓取 IllusImg 和 IllusTitle)
                     illustrationsContainer.innerHTML += `
                         <a href="illustration.html?id=${item.ID}" class="block relative group aspect-square bg-stone-200 overflow-hidden cursor-crosshair fade-in-up">
                             <img src="${item.IllusImg}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-700">
@@ -132,22 +126,28 @@
                         </a>
                     `;
                 } else if (type === 'text') {
-                    // 形式 2: 純文字敘述 (修正了抓取 IllusDescription)
                     illustrationsContainer.innerHTML += `
-                        <div class="aspect-square flex flex-col justify-center p-6 fade-in-up">
-                            <p class="text-xs text-stone-500 tracking-wide leading-relaxed text-center md:text-left">
+                        <div class="aspect-square flex flex-col justify-start items-start p-4 md:p-6 fade-in-up">
+                            <p class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full">
                                 ${item.IllusDescription || ''}
                             </p>
                         </div>
                     `;
+                } else if (type === 'title') {
+                    illustrationsContainer.innerHTML += `
+                        <div class="aspect-square flex flex-col justify-start items-start p-4 md:p-6 fade-in-up">
+                            <h3 class="text-2xl md:text-3xl text-stone-700 tracking-[0.2em] font-light uppercase text-left leading-snug w-full">
+                                ${item.IllusTitle || ''}
+                            </h3>
+                        </div>
+                    `;
                 } else if (type === 'blank') {
-                    // 形式 3: 空白格子
                     illustrationsContainer.innerHTML += `
                         <div class="aspect-square hidden md:block"></div>
                     `;
                 }
             });
-        }
+        }    
 
         // --- 第三部分：處理 Projects (專案區塊) ---
         const projectsContainer = document.getElementById("projects-container");
