@@ -54,14 +54,14 @@
 
         <section class="mb-32">
             <h2 class="text-xs tracking-widest text-stone-400 mb-8 uppercase border-b border-stone-200 pb-2">Projects</h2>
-            <div id="projects-container" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-16">
+            <div id="projects-container" class="grid grid-cols-2 md:grid-cols-5 gap-4 items-start">
                 <p class="text-stone-400 text-sm">作品載入中...</p>
             </div>
         </section>
 
         <section class="mb-32">
             <h2 class="text-xs tracking-widest text-stone-400 mb-8 uppercase border-b border-stone-200 pb-2">Art Courses</h2>
-            <div id="courses-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div id="courses-container" class="grid grid-cols-2 md:grid-cols-5 gap-4 items-start">
                 <p class="text-stone-400 text-sm">課程載入中...</p>
             </div>
         </section>
@@ -105,7 +105,7 @@
             }
         }
 
-        // --- 🌟 第二部分：處理 Illustrations (精確策展網格) ---
+        // --- 🌟 第二部分：處理 Illustrations (精確策展網格 - 支援外部連結與防爆框版) ---
         const illustrationsContainer = document.getElementById("illustrations-container");
         if (data.Illustrations && illustrationsContainer) {
             illustrationsContainer.innerHTML = ""; // 清空載入中文字
@@ -114,12 +114,15 @@
                 const type = item.Type ? item.Type.toLowerCase().trim() : '';
 
                 if (type === 'image') {
-                    // 形式 1: Image + Title (修復遮罩消失 Bug，並套用精準數值 Padding)
+                    // 🌟 核心修改：判斷連結，有填 IllusLink 就用它，沒填就用原本的 ID 頁面連結
+                    const targetLink = item.IllusLink ? item.IllusLink : (item.ID ? `illustration.html?id=${item.ID}` : '#');
+
+                    // 形式 1: Image + Title (左上左下精準定位、無毛玻璃版)
                     illustrationsContainer.innerHTML += `
-                        <a href="illustration.html?id=${item.ID}" class="block relative group aspect-square bg-stone-200 overflow-hidden cursor-crosshair fade-in-up">
+                        <a href="${targetLink}" class="block relative group aspect-square bg-stone-200 overflow-hidden cursor-crosshair fade-in-up">
                             <img src="${item.IllusImg}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-700">
                             
-                            <div class="absolute inset-0 bg-stone-900/20  opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none">
+                            <div class="absolute inset-0 bg-stone-900/20 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none">
                                 
                                 <div class="absolute top-0 left-0 pt-[15px] pl-[15px] text-left w-full">
                                     <span class="text-white text-xs tracking-widest uppercase font-medium">
@@ -157,48 +160,138 @@
                         </div>
                     `;
                 } else if (type === 'blank') {
+                    // 形式 3: 空白格子
                     illustrationsContainer.innerHTML += `
                         <div class="aspect-square hidden md:block"></div>
                     `;
                 }
             });
-        }    
+        }
 
         // --- 第三部分：處理 Projects (專案區塊) ---
         const projectsContainer = document.getElementById("projects-container");
         if (data.Projects && projectsContainer) {
             projectsContainer.innerHTML = "";
-            data.Projects.forEach(item => {
-                projectsContainer.innerHTML += `
-                    <a href="project.html?id=${item.ID}" class="group block fade-in-up">
-                        <div class="aspect-[16/9] mb-6 overflow-hidden bg-stone-200">
-                            <img src="${item.ProjectImg}" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
-                        </div>
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="text-xl font-light text-stone-800">${item.ProjectName}</h3>
-                                <p class="text-xs text-stone-400 mt-1 uppercase tracking-widest">${item.ProjectDescription || ''}</p>
+            
+            data.Projects.forEach((item) => {
+                const type = item.Type ? item.Type.toLowerCase().trim() : '';
+
+                if (type === 'image') {
+                    // 🌟 判斷連結：如果有填 ProjectLink 就連過去，沒有的話預設連到 project.html 加上 ID
+                    const targetLink = item.ProjectLink ? item.ProjectLink : (item.ID ? `project.html?id=${item.ID}` : '#');
+
+                    // 形式 1: 專案圖片 (無模糊遮罩，文字左上左下)
+                    projectsContainer.innerHTML += `
+                        <a href="${targetLink}" class="block relative group aspect-square bg-stone-200 overflow-hidden cursor-crosshair fade-in-up">
+                            <img src="${item.ProjectImg}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-700">
+                            
+                            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none">
+                                
+                                <div class="absolute top-0 left-0 pt-[15px] pl-[15px] text-left w-full">
+                                    <span class="text-white text-xs tracking-widest uppercase font-medium drop-shadow-md">
+                                        ${item.ProjectName || ''}
+                                    </span>
+                                </div>
+
+                                ${item.Year ? `
+                                <div class="absolute bottom-0 left-0 pb-[15px] pl-[15px] text-left w-full">
+                                    <span class="text-white text-[10px] opacity-80 font-mono tracking-wider drop-shadow-md">
+                                        ${item.Year}
+                                    </span>
+                                </div>
+                                ` : ''}
                             </div>
-                            <span class="text-xs text-stone-400 font-mono">${item.TechStack ? item.TechStack[0] : ''}</span>
+                        </a>
+                    `;
+                } else if (type === 'text') {
+                    // 形式 2: 專案敘述 (左側貼齊)
+                    projectsContainer.innerHTML += `
+                        <div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up">
+                            <p class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full">
+                                ${item.ProjectDescription || ''}
+                            </p>
                         </div>
-                    </a>
-                `;
+                    `;
+                } else if (type === 'title') {
+                    // 形式 3: 巨大標題 (左側貼齊)
+                    projectsContainer.innerHTML += `
+                        <div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden">
+                            <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
+                                style="font-family: 'Outfit', sans-serif;">
+                                ${item.ProjectName || ''}
+                            </h3>
+                        </div>
+                    `;
+                } else if (type === 'blank') {
+                    // 形式 4: 空白格子
+                    projectsContainer.innerHTML += `
+                        <div class="aspect-square hidden md:block"></div>
+                    `;
+                }
             });
         }
         
-        // --- 第四部分：處理 Courses (課程區塊) ---
+        // --- 第四部分：處理 Courses (自由拼圖網格版) ---
         const coursesContainer = document.getElementById("courses-container");
         if (data.Courses && coursesContainer) {
             coursesContainer.innerHTML = "";
-            data.Courses.forEach(item => {
-                coursesContainer.innerHTML += `
-                    <div class="bg-white p-8 border border-stone-100 shadow-sm">
-                        <span class="text-[10px] tracking-widest text-stone-400 uppercase">${item.Status}</span>
-                        <h3 class="text-lg font-normal mt-2 mb-4">${item.CourseName}</h3>
-                        <p class="text-sm text-stone-500 leading-relaxed mb-6">${item.CourseInfo}</p>
-                        <a href="${item.ApplyLink}" target="_blank" class="text-xs border-b border-stone-800 pb-1 hover:text-stone-400 hover:border-stone-400 transition">LEARN MORE</a>
-                    </div>
-                `;
+            
+            data.Courses.forEach((item) => {
+                // 抓取 Type，如果沒有填預設為空
+                const type = item.Type ? item.Type.toLowerCase().trim() : '';
+
+                if (type === 'image') {
+                    // 形式 1: 圖片積木 (帶有狀態 Hover)
+                    coursesContainer.innerHTML += `
+                        <div class="block relative group aspect-square bg-stone-200 overflow-hidden fade-in-up">
+                            <img src="${item.CourseImg}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-700">
+                            
+                            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none">
+                                ${item.CourseStatus ? `
+                                <div class="absolute bottom-0 left-0 pb-[15px] pl-[15px] text-left w-full">
+                                    <span class="text-white text-[10px] tracking-widest uppercase font-mono drop-shadow-md">
+                                        [ ${item.CourseStatus} ]
+                                    </span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                } else if (type === 'text') {
+                    // 形式 2: 文字積木 (左側貼齊)
+                    coursesContainer.innerHTML += `
+                        <div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up">
+                            <p class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full">
+                                ${item.CourseDescription || ''}
+                            </p>
+                        </div>
+                    `;
+                } else if (type === 'title') {
+                    // 形式 3: 標題積木 (左側貼齊)
+                    coursesContainer.innerHTML += `
+                        <div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden">
+                            <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
+                                style="font-family: 'Outfit', sans-serif;">
+                                ${item.CourseName || ''}
+                            </h3>
+                        </div>
+                    `;
+                } else if (type === 'form') {
+                    // 🌟 形式 5: 表單連結積木 (置中方塊設計)
+                    const targetLink = item.FormLink ? item.FormLink : '#';
+                    coursesContainer.innerHTML += `
+                        <div class="aspect-square flex flex-col justify-center items-center p-4 fade-in-up bg-stone-100 hover:bg-stone-200 transition duration-500">
+                            <a href="${targetLink}" target="_blank" class="text-xs tracking-widest text-stone-600 hover:text-stone-900 uppercase border-b border-stone-400 hover:border-stone-900 pb-1 transition duration-300">
+                                Apply / Form
+                            </a>
+                        </div>
+                    `;
+                } else if (type === 'blank') {
+                    // 形式 4: 空白積木
+                    coursesContainer.innerHTML += `
+                        <div class="aspect-square hidden md:block"></div>
+                    `;
+                }
             });
         }
     })
