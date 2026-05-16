@@ -7,7 +7,16 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link rel="stylesheet" href="https://use.typekit.net/kop3xiw.css">
+    <script>
+    (function(d) {
+        var config = {
+        kitId: 'ulo6vbv',
+        scriptTimeout: 3000,
+        async: true
+        },
+        h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+    })(document);
+    </script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="antialiased selection:bg-stone-200">
@@ -163,8 +172,8 @@
                 const type = item.Type ? item.Type.toLowerCase().trim() : '';
 
                 if (type === 'image') {
-                    // 🌟 核心修改：判斷連結，有填 IllusLink 就用它，沒填就用原本的 ID 頁面連結
-                    const targetLink = item.IllusLink ? item.IllusLink : (item.ID ? `illustration.html?id=${item.ID}` : '#');
+                    // 🌟 直接統一指向 detail.html，並帶上 type=illus 標記
+                    const targetLink = item.ID ? `pagecontent.html?type=illus&id=${item.ID}` : '#';
 
                     // 形式 1: Image + Title (左上左下精準定位、無毛玻璃版)
                     illustrationsContainer.innerHTML += `
@@ -203,8 +212,8 @@
                     illustrationsContainer.innerHTML += `
                         <div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden">
                             <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
-                                style="font-family: 'Outfit', sans-serif;">
-                                ${item.IllusTitle || ''}
+                            style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">
+                            ${item.IllusTitle || ''}
                             </h3>
                         </div>
                     `;
@@ -226,8 +235,8 @@
                 const type = item.Type ? item.Type.toLowerCase().trim() : '';
 
                 if (type === 'image') {
-                    // 🌟 判斷連結：如果有填 ProjectLink 就連過去，沒有的話預設連到 project.html 加上 ID
-                    const targetLink = item.ProjectLink ? item.ProjectLink : (item.ID ? `project.html?id=${item.ID}` : '#');
+                    // 🌟 直接統一指向 detail.html，並帶上 type=project 標記
+                    const targetLink = item.ID ? `pagecontent.html?type=project&id=${item.ID}` : '#';
 
                     // 形式 1: 專案圖片 (無模糊遮罩，文字左上左下)
                     projectsContainer.innerHTML += `
@@ -266,8 +275,8 @@
                     projectsContainer.innerHTML += `
                         <div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden">
                             <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
-                                style="font-family: 'Outfit', sans-serif;">
-                                ${item.ProjectName || ''}
+                            style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">
+                            ${item.ProjectName || ''}
                             </h3>
                         </div>
                     `;
@@ -319,9 +328,9 @@
                     // 形式 3: 標題積木 (左側貼齊)
                     coursesContainer.innerHTML += `
                         <div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden">
-                            <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
-                                style="font-family: 'Outfit', sans-serif;">
-                                ${item.CourseName || ''}
+                            <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-wide font-light uppercase text-left leading-none w-full break-words" 
+                            style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif; font-variation-settings: 'wght' 300;">
+                            ${item.CourseName || ''}
                             </h3>
                         </div>
                     `;

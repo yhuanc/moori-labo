@@ -4,8 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Detail | moori.</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+      (function(d) {
+        var config = {
+          kitId: 'kop3xiw',
+          scriptTimeout: 3000,
+          async: true
+        },
+        h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+      })(document);
+    </script>
+
+    <link rel="stylesheet" href="style.css">
+
     <style>
         /* 優雅的積木漸顯動畫 */
         .fade-in-up { 
@@ -92,8 +108,9 @@
                             } else if (type === 'title') {
                                 container.innerHTML += `
                                     <div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden">
-                                        <h1 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words mb-3" style="font-family: 'Outfit', sans-serif;">
-                                            ${item.TextContent || ''}
+                                        <h1 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words mb-3" 
+                                        style="font-family: 'ofelia-text', 'source-han-sans-tw-variable', sans-serif; font-variation-settings: 'wght' 700;">
+                                        ${item.TextContent || ''}
                                         </h1>
                                         ${item.SubTitle ? `
                                             <p class="text-xs text-stone-400 tracking-wide text-left font-light">

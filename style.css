@@ -1,22 +1,21 @@
 /* 1. 全站基礎設定 */
 body {
-    /* 全站預設字型：Outfit */
-    font-family: 'Outfit', sans-serif;
+    /* 保留這行，讓中文自動退回使用思源黑體台灣版 */
+    font-family: 'Outfit', 'ofelia-text', "source-han-sans-tw-variable", sans-serif;
     
-    /* 這兩行能讓 Mac/iOS 上的字體渲染更滑順銳利，高級感必備 */
+    /* ⚠️ 把這裡原本的 font-variation-settings: "wght" 250; 刪掉！ */
+    
     -webkit-font-smoothing: antialiased; 
     -moz-osx-font-smoothing: grayscale;
-    
-    background-color: #FAFAF9; /* 暖石色背景 (Section 02 網格區會用到) */
-    color: #44403C; /* 暖深灰文字 */
-    overflow-x: hidden; /* 確保不會出現醜醜的左右捲動軸 */
+    background-color: #FAFAF9; 
+    color: #44403C; 
+    overflow-x: hidden; 
 }
 
-/* 2. 標題設定：專屬使用 Ofelia */
-/* 只要是 h1 到 h3，或者妳特別加上 .font-ofelia 的地方，都會換成 Ofelia */
+/* 2. 標題設定：專屬使用 Ofelia + 中文思源黑體 */
+/* 只要是 h1 到 h3，或者妳特別加上 .font-ofelia 的地方，都會套用這個混排組合 */
 h1, h2, h3, .font-ofelia {
-    font-family: 'ofelia-text', sans-serif;
-    /* font-family: 'Outfit', sans-serif; */
+    font-family: 'ofelia-text', "source-han-sans-tw-variable", sans-serif;
 }
 
 /* 背景霧氣動畫 (The Mist Effect) */
