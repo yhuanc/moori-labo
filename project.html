@@ -3,60 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作品詳情 | moori.</title>
-    <!-- 引入妳的 Tailwind 與 CSS -->
+    <title>Project Detail | moori.</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 優雅的積木漸顯動畫 */
+        .fade-in-up { 
+            animation: fadeInUp 0.8s ease-out forwards; 
+            opacity: 0; 
+            transform: translateY(20px); 
+        }
+        @keyframes fadeInUp { 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+    </style>
 </head>
-<body class="antialiased text-stone-800 bg-stone-50">
+<body class="bg-stone-50 text-stone-800 font-sans antialiased">
 
-    <!-- 這是用來放詳細內容的空盒子 -->
-    <main id="project-detail-container" class="max-w-4xl mx-auto px-6 py-20">
-        <p class="text-stone-400">正在載入作品資訊...</p>
+    <header class="w-full py-6 px-6 md:px-12 flex justify-between items-center fixed top-0 z-50 bg-stone-50/80 backdrop-blur-md">
+        <a href="index.html" class="text-2xl font-light tracking-tighter" style="font-family: 'Outfit', sans-serif;">moori.</a>
+        <a href="index.html" class="text-xs tracking-widest uppercase hover:opacity-50 transition">Back to Home</a>
+    </header>
+
+    <main class="w-[90vw] md:w-[88vw] mx-auto pt-32 pb-24 min-h-screen">
+        
+        <div id="loading" class="text-center text-stone-400 text-sm tracking-widest uppercase mt-20">Loading...</div>
+
+        <div id="detail-blocks-container" class="grid grid-cols-2 md:grid-cols-5 gap-4 items-start hidden">
+            </div>
+
     </main>
 
-    <!-- 所有的 JavaScript 都要包在 script 標籤裡面 -->
     <script>
-        // 1. 妳剛剛寫的很棒的抓 ID 邏輯
+        // ⚠️ 請記得抽換成妳自己的 Google Apps Script API 網址喔！
+        const API_URL = "這裡請換成妳的_API_網址";
+
+        // 1. 從瀏覽器網址列抓取當前專案的 ID (號碼牌)
         const urlParams = new URLSearchParams(window.location.search);
         const currentId = urlParams.get('id');
 
-        // 2. 貼上妳的 Google Sheets API 網址
-        const API_URL = "https://script.google.com/macros/s/AKfycbzR7pUepFVBUWQi2C9w75OoSux4i5LgaxR8v9Qn-FnM79mt-mpVYrVTdDDvKhhRAM4l/exec";
-
-        const container = document.getElementById("project-detail-container");
-
-        // 如果網址沒有提供 ID，提早結束
         if (!currentId) {
-            container.innerHTML = `<p>找不到該作品。請回首頁重新點擊。</p>`;
+            document.getElementById('loading').innerText = "Project not found.";
         } else {
-            // 3. 去試算表抓資料
+            // 2. 呼叫 API 讀取試算表資料庫
             fetch(API_URL)
                 .then(response => response.json())
                 .then(data => {
-                    // 4. 從所有資料中，找出 ID 符合的「那一個作品」
-                    const project = data.find(item => item.ID == currentId);
+                    const container = document.getElementById('detail-blocks-container');
+                    
+                    // 3. 檢查 PageContent 倉庫是否存在
+                    if (data.PageContent && container) {
+                        container.innerHTML = ""; // 先清空容器
 
-                    if (project) {
-                        // 5. 把找到的作品資料，套進 HTML 排版裡
-                        container.innerHTML = `
-                            <a href="index.html" class="text-sm text-stone-500 hover:text-stone-800 mb-8 inline-block transition">← 回到首頁</a>
-                            <h1 class="text-3xl font-light mb-4">${project.ProjectName}</h1>
-                            <p class="text-stone-500 mb-8">${project.Description}</p>
-                            <img src="${project.ImageURL}" class="w-full rounded-md shadow-sm mb-12">
-                            
-                            <!-- 假設妳試算表有新增 ProcessText 欄位放創作過程 -->
-                            <div class="prose max-w-none text-stone-600 leading-relaxed">
-                                ${project.ProcessText ? project.ProcessText : ''}
-                            </div>
-                        `;
-                    } else {
-                        container.innerHTML = `<p>找不到這筆作品資料，請確認試算表裡的 ID 是否正確。</p>`;
+                        // 4. 精準篩選：PageType 為 'project' 且 TargetID 與網址 ID 符合的所有資料列
+                        const projectBlocks = data.PageContent.filter(item => 
+                            item.PageType && item.PageType.toLowerCase().trim() === 'project' && 
+                            item.TargetID == currentId
+                        );
+
+                        if (projectBlocks.length === 0) {
+                            document.getElementById('loading').innerText = "No details found for this project.";
+                            return;
+                        }
+
+                        // 5. 依序將每一列（每個積木）組裝成網頁元素
+                        projectBlocks.forEach(item => {
+                            const type = item.Type ? item.Type.toLowerCase().trim() : '';
+
+                            if (type === 'image') {
+                                // 🧱 形式 1：圖片積木 (維持正方形與優雅黑白高質感)
+                                container.innerHTML += `
+                                    <div class="aspect-square bg-stone-100 overflow-hidden fade-in-up">
+                                        <img src="${item.ImgUrl || ''}" class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-750">
+                                    </div>
+                                `;
+                            } else if (type === 'text') {
+                                // 🧱 形式 2：詳細敘述文字積木
+                                container.innerHTML += `
+                                    <div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up">
+                                        <p class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full mb-4">
+                                            ${item.TextContent || ''}
+                                        </p>
+                                        ${item.RoleDetail ? `
+                                            <span class="text-[10px] tracking-widest text-stone-400 uppercase font-mono mt-auto pt-2">
+                                                [ ROLE: ${item.RoleDetail} ]
+                                            </span>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            } else if (type === 'title') {
+                                // 🧱 形式 3：大標題積木
+                                container.innerHTML += `
+                                    <div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden">
+                                        <h1 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words mb-3" style="font-family: 'Outfit', sans-serif;">
+                                            ${item.TextContent || ''}
+                                        </h1>
+                                        ${item.SubTitle ? `
+                                            <p class="text-xs text-stone-400 tracking-wide text-left font-light">
+                                                ${item.SubTitle}
+                                            </p>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            } else if (type === 'blank') {
+                                // 🧱 形式 4：留白積木 (桌機版留空，手機版自動隱藏避免畫面過長)
+                                container.innerHTML += `
+                                    <div class="aspect-square hidden md:block"></div>
+                                `;
+                            }
+                        });
+
+                        // 6. 渲染完畢，隱藏 Loading，打開拼圖大籃子
+                        document.getElementById('loading').style.display = 'none';
+                        container.classList.remove('hidden');
                     }
                 })
                 .catch(error => {
-                    console.error("載入失敗：", error);
-                    container.innerHTML = `<p>載入失敗，請稍後再試。</p>`;
+                    console.error("Error:", error);
+                    document.getElementById('loading').innerText = "Error loading project details.";
                 });
         }
     </script>
