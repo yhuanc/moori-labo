@@ -38,47 +38,45 @@
         // ⚠️ 請記得抽換成妳自己的 Google Apps Script API 網址喔！
         const API_URL = "https://script.google.com/macros/s/AKfycbwAuHyTZNeobDQQVyrxt22y5Mm5J7IWJXBOsYOUoP6ui2lANlJ6IZMPCX0kKZt262uO/exec";
 
-        // 1. 從瀏覽器網址列抓取當前專案的 ID (號碼牌)
+        // 1. 從網址列同時抓取 type (分類) 和 id (號碼牌)
         const urlParams = new URLSearchParams(window.location.search);
-        const currentId = urlParams.get('id');
+        const currentType = urlParams.get('type'); // 會拿到 'project' 或 'illus'
+        const currentId = urlParams.get('id');     // 會拿到數字 ID
 
-        if (!currentId) {
-            document.getElementById('loading').innerText = "Project not found.";
+        if (!currentType || !currentId) {
+            document.getElementById('loading').innerText = "Page not found.";
         } else {
-            // 2. 呼叫 API 讀取試算表資料庫
+            // 2. 呼叫 API 讀取試算表
             fetch(API_URL)
                 .then(response => response.json())
                 .then(data => {
                     const container = document.getElementById('detail-blocks-container');
                     
-                    // 3. 檢查 PageContent 倉庫是否存在
                     if (data.PageContent && container) {
-                        container.innerHTML = ""; // 先清空容器
+                        container.innerHTML = ""; 
 
-                        // 4. 精準篩選：PageType 為 'project' 且 TargetID 與網址 ID 符合的所有資料列
-                        const projectBlocks = data.PageContent.filter(item => 
-                            item.PageType && item.PageType.toLowerCase().trim() === 'project' && 
+                        // 3. 🌟 超聰明的動態篩選：根據網址傳進來的 currentType 決定要撈 project 還是 illus！
+                        const blocks = data.PageContent.filter(item => 
+                            item.PageType && item.PageType.toLowerCase().trim() === currentType.toLowerCase().trim() && 
                             item.TargetID == currentId
                         );
 
-                        if (projectBlocks.length === 0) {
-                            document.getElementById('loading').innerText = "No details found for this project.";
+                        if (blocks.length === 0) {
+                            document.getElementById('loading').innerText = "No details found for this item.";
                             return;
                         }
 
-                        // 5. 依序將每一列（每個積木）組裝成網頁元素
-                        projectBlocks.forEach(item => {
+                        // 4. 依序渲染網格積木
+                        blocks.forEach(item => {
                             const type = item.Type ? item.Type.toLowerCase().trim() : '';
 
                             if (type === 'image') {
-                                // 🧱 形式 1：圖片積木 (維持正方形與優雅黑白高質感)
                                 container.innerHTML += `
                                     <div class="aspect-square bg-stone-100 overflow-hidden fade-in-up">
                                         <img src="${item.ImgUrl || ''}" class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-750">
                                     </div>
                                 `;
                             } else if (type === 'text') {
-                                // 🧱 形式 2：詳細敘述文字積木
                                 container.innerHTML += `
                                     <div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up">
                                         <p class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full mb-4">
@@ -92,7 +90,6 @@
                                     </div>
                                 `;
                             } else if (type === 'title') {
-                                // 🧱 形式 3：大標題積木
                                 container.innerHTML += `
                                     <div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden">
                                         <h1 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words mb-3" style="font-family: 'Outfit', sans-serif;">
@@ -106,21 +103,20 @@
                                     </div>
                                 `;
                             } else if (type === 'blank') {
-                                // 🧱 形式 4：留白積木 (桌機版留空，手機版自動隱藏避免畫面過長)
                                 container.innerHTML += `
                                     <div class="aspect-square hidden md:block"></div>
                                 `;
                             }
                         });
 
-                        // 6. 渲染完畢，隱藏 Loading，打開拼圖大籃子
+                        // 顯示內容，隱藏 Loading
                         document.getElementById('loading').style.display = 'none';
                         container.classList.remove('hidden');
                     }
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    document.getElementById('loading').innerText = "Error loading project details.";
+                    document.getElementById('loading').innerText = "Error loading details.";
                 });
         }
     </script>
