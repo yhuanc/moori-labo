@@ -68,8 +68,24 @@
 
     </main>
 
-    <footer class="py-24 text-center relative z-10">
-        <div class="text-xl font-light text-stone-300">moori</div>
+    <footer class="py-16 md:py-24 relative z-10 bg-stone-50 border-t border-stone-100 mt-20">
+        <div class="w-[90vw] md:w-[72vw] mx-auto">
+            
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6">
+                
+                <div id="footer-logo" class="text-4xl md:text-5xl font-light text-stone-800 tracking-tighter" style="font-family: 'Outfit', sans-serif;">
+                    </div>
+
+                <nav id="footer-links-container" class="flex flex-wrap justify-start md:justify-end gap-x-6 gap-y-2">
+                    </nav>
+            </div>
+
+            <div class="border-t border-stone-200 pt-8 text-center md:text-center">
+                <p id="footer-copyright" class="text-[10px] md:text-xs tracking-widest text-stone-400">
+                    </p>
+            </div>
+            
+        </div>
     </footer>
 
     <script>
@@ -81,16 +97,21 @@
     .then(data => {
         console.log("成功抓到全站資料：", data);
 
-        // --- 🌟 第一部分：處理 LandingArea (首頁氛圍設定) ---
+        // --- 🌟 第一部分：處理 LandingArea (首頁氛圍設定 - 整合 Footer 最終版) ---
         if (data.LandingArea) {
+            // 1. 建立純文字欄位對照表 (包含 Footer)
             const landingMap = {
                 'HeroSubtitle': 'hero-subtitle',
                 'HeroTitle': 'hero-title',
                 'NavWork': 'nav-work',
                 'NavAbout': 'nav-about',
-                'NavContact': 'nav-contact'
+                'NavContact': 'nav-contact',
+                // 🌟 新增的 Footer 文字綁定 (大小寫完全對應妳的 sheet)
+                'FooterLogo': 'footer-logo',
+                'FooterCopyRight': 'footer-copyright'
             };
 
+            // 2. 自動填充所有純文字欄位
             Object.keys(landingMap).forEach(key => {
                 const setting = data.LandingArea.find(item => item.Key === key);
                 const element = document.getElementById(landingMap[key]);
@@ -99,9 +120,37 @@
                 }
             });
 
+            // 3. 處理 Header 背景圖
             const heroImg = data.LandingArea.find(item => item.Key === 'HeroImage');
             if (heroImg && heroImg.Value) {
                 document.getElementById("hero-header").style.backgroundImage = `url('${heroImg.Value}')`;
+            }
+
+            // 🌟 4. 新增的 Footer 動態多組連結處理 (自動抓取 FooterLink1 ~ FooterLink5)
+            const footerLinksContainer = document.getElementById("footer-links-container");
+            if (footerLinksContainer) {
+                footerLinksContainer.innerHTML = ''; // 載入前先清空容器
+
+                for (let i = 1; i <= 5; i++) {
+                    const textItem = data.LandingArea.find(item => item.Key === `FooterLink${i}_Text`);
+                    const urlItem = data.LandingArea.find(item => item.Key === `FooterLink${i}_Url`);
+                    
+                    if (textItem && textItem.Value && urlItem && urlItem.Value) {
+                        let linkHref = urlItem.Value.trim();
+                        
+                        // 貼心防呆：如果填的是信箱且沒加前綴，自動補上 mailto:
+                        if (linkHref.includes('@') && !linkHref.startsWith('mailto:') && !linkHref.startsWith('http')) {
+                            linkHref = `mailto:${linkHref}`;
+                        }
+
+                        // 生成連結按鈕並放入容器 (🌟 已經拿掉 border-b, border-stone-300, pb-0.5 等底線設定)
+                        footerLinksContainer.innerHTML += `
+                            <a href="${linkHref}" target="_blank" class="text-xs md:text-sm tracking-widest text-stone-600 hover:text-stone-400 uppercase transition duration-300">
+                                ${textItem.Value}
+                            </a>
+                        `;
+                    }
+                }
             }
         }
 
