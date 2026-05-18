@@ -51,85 +51,108 @@
     </main>
 
     <script>
-        // ⚠️ 請記得抽換成妳自己的 Google Apps Script API 網址喔！
+        // ⚠️ 請務必把這裡換成妳最新部署的 API 網址！
         const API_URL = "https://script.google.com/macros/s/AKfycbwAuHyTZNeobDQQVyrxt22y5Mm5J7IWJXBOsYOUoP6ui2lANlJ6IZMPCX0kKZt262uO/exec";
 
         // 1. 從網址列同時抓取 type (分類) 和 id (號碼牌)
         const urlParams = new URLSearchParams(window.location.search);
-        const currentType = urlParams.get('type'); // 會拿到 'project' 或 'illus'
-        const currentId = urlParams.get('id');     // 會拿到數字 ID
+        const currentType = urlParams.get('type'); 
+        const currentId = urlParams.get('id');     
 
         if (!currentType || !currentId) {
-            document.getElementById('loading').innerText = "Page not found.";
+            document.getElementById('loading').innerText = "Page not found (缺少網址參數).";
         } else {
             // 2. 呼叫 API 讀取試算表
             fetch(API_URL)
                 .then(response => response.json())
                 .then(data => {
+                    // 🌟 工程師探測器：幫我們把後台送來的資料印在 Console 裡！
+                    console.log("【檢查點】API 回傳的資料長這樣：", data);
+
                     const container = document.getElementById('detail-blocks-container');
+                    const loadingElement = document.getElementById('loading');
                     
-                    if (data.PageContent && container) {
-                        container.innerHTML = ""; 
-
-                        // 3. 🌟 超聰明的動態篩選：根據網址傳進來的 currentType 決定要撈 project 還是 illus！
-                        const blocks = data.PageContent.filter(item => 
-                            item.PageType && item.PageType.toLowerCase().trim() === currentType.toLowerCase().trim() && 
-                            item.TargetID == currentId
-                        );
-
-                        if (blocks.length === 0) {
-                            document.getElementById('loading').innerText = "No details found for this item.";
-                            return;
-                        }
-
-                        // 4. 依序渲染網格積木
-                        blocks.forEach(item => {
-                            const type = item.Type ? item.Type.toLowerCase().trim() : '';
-
-                            if (type === 'image') {
-                                container.innerHTML += `
-                                    <div class="aspect-square bg-stone-100 overflow-hidden fade-in-up">
-                                        <img src="${item.ImgUrl || ''}" class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-750">
-                                    </div>
-                                `;
-                            } else if (type === 'text') {
-                                container.innerHTML += `
-                                    <div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up">
-                                        <p class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full mb-4">
-                                            ${item.TextContent || ''}
-                                        </p>
-                                        ${item.RoleDetail ? `
-                                            <span class="text-[10px] tracking-widest text-stone-400 uppercase font-mono mt-auto pt-2">
-                                                [ ROLE: ${item.RoleDetail} ]
-                                            </span>
-                                        ` : ''}
-                                    </div>
-                                `;
-                            } else if (type === 'title') {
-                                container.innerHTML += `
-                                    <div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden">
-                                        <h1 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words mb-3" 
-                                        style="font-family: 'ofelia-text', 'source-han-sans-tw-variable', sans-serif; font-variation-settings: 'wght' 700;">
-                                        ${item.TextContent || ''}
-                                        </h1>
-                                        ${item.SubTitle ? `
-                                            <p class="text-xs text-stone-400 tracking-wide text-left font-light">
-                                                ${item.SubTitle}
-                                            </p>
-                                        ` : ''}
-                                    </div>
-                                `;
-                            } else if (type === 'blank') {
-                                container.innerHTML += `
-                                    <div class="aspect-square hidden md:block"></div>
-                                `;
-                            }
-                        });
-
-                        // 顯示內容，隱藏 Loading
-                        document.getElementById('loading').style.display = 'none';
-                        container.classList.remove('hidden');
+                    // 🌟 防呆機制 1：如果 API 根本沒傳回 PageContent 標籤
+                    if (!data.PageContent) {
+                        loadingElement.innerText = "Error: 找不到 PageContent 資料表，請檢查 Google Apps Script！";
+                        return;
                     }
+
+                    container.innerHTML = ""; 
+
+                    // 3. 根據網址傳進來的參數，篩選出屬於這個作品的積木
+                    const blocks = data.PageContent.filter(item => 
+                        item.PageType && item.PageType.toLowerCase().trim() === currentType.toLowerCase().trim() && 
+                        item.TargetID == currentId
+                    );
+
+                    // 🌟 防呆機制 2：如果表格裡有 PageContent，但找不到符合這個 ID 的資料
+                    if (blocks.length === 0) {
+                        loadingElement.innerHTML = `
+                            <div class="py-12 text-center fade-in-up">
+                                <p class="text-stone-400 tracking-widest uppercase text-sm mb-4">Content is coming soon...</p>
+                                <a href="index.html" class="text-xs text-stone-500 border-b border-stone-300 hover:text-stone-800 transition">Return to Home</a>
+                            </div>
+                        `;
+                        return; // 結束執行，不再往下排版
+                    }
+
+                    // 4. 開始依序渲染網格積木
+                    blocks.forEach(item => {
+                        const type = item.Type ? item.Type.toLowerCase().trim() : '';
+
+                        // 🌟 核心升級：讀取 Span 欄位，設定電腦版的跨欄寬度
+                        const spanClass = item.Span ? `md:col-span-${item.Span}` : 'md:col-span-1';
+
+                        if (type === 'image') {
+                            container.innerHTML += `
+                                <div class="relative group aspect-square md:aspect-auto h-full min-h-[50vw] md:min-h-[20vw] bg-stone-200 overflow-hidden fade-in-up ${spanClass}">
+                                    <img src="${item.ImgUrl}" class="w-full h-full object-cover">
+                                </div>
+                            `;
+                        } else if (type === 'text') {
+                            container.innerHTML += `
+                                <div class="aspect-square md:aspect-auto flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up ${spanClass}">
+                                    <p class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full mb-4" style="font-variation-settings: 'wght' 250;">
+                                        ${item.TextContent || ''}
+                                    </p>
+                                    ${item.RoleDetail ? `
+                                        <span class="text-[10px] tracking-widest text-stone-400 uppercase font-mono mt-auto pt-2">
+                                            [ ROLE: ${item.RoleDetail} ]
+                                        </span>
+                                    ` : ''}
+                                </div>
+                            `;
+                        } else if (type === 'title') {
+                            container.innerHTML += `
+                                <div class="aspect-square md:aspect-auto flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden ${spanClass}">
+                                    ${item.Year ? `
+                                        <span class="text-[10px] tracking-widest text-stone-400 font-mono uppercase mb-2">
+                                            [ ${item.Year} ]
+                                        </span>
+                                    ` : ''}
+
+                                    <h1 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words mb-3" style="font-family: 'ofelia-text', 'source-han-sans-tw-variable', sans-serif; font-variation-settings: 'wght' 700;">
+                                        ${item.TextContent || ''}
+                                    </h1>
+
+                                    ${item.SubTitle ? `
+                                        <p class="text-xs text-stone-400 tracking-wide text-left" style="font-variation-settings: 'wght' 250;">
+                                            ${item.SubTitle}
+                                        </p>
+                                    ` : ''}
+                                </div>
+                            `;
+                        } else if (type === 'blank') {
+                            container.innerHTML += `
+                                <div class="hidden md:block ${spanClass}"></div>
+                            `;
+                        }
+                    });
+
+                    // 顯示內容，隱藏 Loading
+                    loadingElement.style.display = 'none';
+                    container.classList.remove('hidden');
                 })
                 .catch(error => {
                     console.error("Error:", error);
