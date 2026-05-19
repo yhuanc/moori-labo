@@ -6,16 +6,11 @@
     <title>Project Detail | moori.</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <script>
       (function(d) {
-        var config = {
-          kitId: 'kop3xiw',
-          scriptTimeout: 3000,
-          async: true
-        },
+        var config = { kitId: 'kop3xiw', scriptTimeout: 3000, async: true },
         h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
       })(document);
     </script>
@@ -23,15 +18,12 @@
     <link rel="stylesheet" href="style.css">
 
     <style>
-        /* 優雅的積木漸顯動畫 */
         .fade-in-up { 
             animation: fadeInUp 0.8s ease-out forwards; 
             opacity: 0; 
             transform: translateY(20px); 
         }
-        @keyframes fadeInUp { 
-            to { opacity: 1; transform: translateY(0); } 
-        }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="bg-stone-50 text-stone-800 font-sans antialiased">
@@ -41,118 +33,116 @@
         <a href="index.html" class="text-xs tracking-widest uppercase hover:opacity-50 transition">Back to Home</a>
     </header>
 
-    <main class="w-[90vw] md:w-[88vw] mx-auto pt-32 pb-24 min-h-screen">
-        
+    <main class="w-full min-h-screen pt-24">
         <div id="loading" class="text-center text-stone-400 text-sm tracking-widest uppercase mt-20">Loading...</div>
 
-        <div id="detail-blocks-container" class="grid grid-cols-2 md:grid-cols-5 gap-4 items-start hidden">
-            </div>
+        <div id="split-layout-container" class="w-full flex flex-col md:flex-row items-stretch hidden">
+            
+            <div id="left-block-grid" class="w-full md:w-[61.8%] p-6 md:p-12 grid grid-cols-2 md:grid-cols-3 gap-4 items-start order-2 md:order-1">
+                </div>
 
+            <div id="right-fixed-panel" class="w-full md:w-[38.2%] p-6 md:p-12 flex flex-col justify-start items-start md:sticky md:top-24 md:h-[calc(100vh-6rem)] order-1 md:order-2 bg-stone-100/50 md:border-l md:border-stone-200">
+                </div>
+
+        </div>
     </main>
 
     <script>
-        // ⚠️ 請務必把這裡換成妳最新部署的 API 網址！
+        // ⚠️ 請換成最新的 API 網址
         const API_URL = "https://script.google.com/macros/s/AKfycbwAuHyTZNeobDQQVyrxt22y5Mm5J7IWJXBOsYOUoP6ui2lANlJ6IZMPCX0kKZt262uO/exec";
 
-        // 1. 從網址列同時抓取 type (分類) 和 id (號碼牌)
         const urlParams = new URLSearchParams(window.location.search);
         const currentType = urlParams.get('type'); 
         const currentId = urlParams.get('id');     
 
         if (!currentType || !currentId) {
-            document.getElementById('loading').innerText = "Page not found (缺少網址參數).";
+            document.getElementById('loading').innerText = "Page not found.";
         } else {
-            // 2. 呼叫 API 讀取試算表
             fetch(API_URL)
                 .then(response => response.json())
                 .then(data => {
-                    // 🌟 工程師探測器：幫我們把後台送來的資料印在 Console 裡！
-                    console.log("【檢查點】API 回傳的資料長這樣：", data);
-
-                    const container = document.getElementById('detail-blocks-container');
+                    const mainContainer = document.getElementById('split-layout-container');
+                    const leftGrid = document.getElementById('left-block-grid');
+                    const rightPanel = document.getElementById('right-fixed-panel');
                     const loadingElement = document.getElementById('loading');
                     
-                    // 🌟 防呆機制 1：如果 API 根本沒傳回 PageContent 標籤
                     if (!data.PageContent) {
-                        loadingElement.innerText = "Error: 找不到 PageContent 資料表，請檢查 Google Apps Script！";
+                        loadingElement.innerText = "Error: 找不到 PageContent 資料表";
                         return;
                     }
 
-                    container.innerHTML = ""; 
-
-                    // 3. 根據網址傳進來的參數，篩選出屬於這個作品的積木
-                    const blocks = data.PageContent.filter(item => 
+                    // 篩選出該專案的所有列
+                    const allBlocks = data.PageContent.filter(item => 
                         item.PageType && item.PageType.toLowerCase().trim() === currentType.toLowerCase().trim() && 
                         item.TargetID == currentId
                     );
 
-                    // 🌟 防呆機制 2：如果表格裡有 PageContent，但找不到符合這個 ID 的資料
-                    if (blocks.length === 0) {
-                        loadingElement.innerHTML = `
-                            <div class="py-12 text-center fade-in-up">
-                                <p class="text-stone-400 tracking-widest uppercase text-sm mb-4">Content is coming soon...</p>
-                                <a href="index.html" class="text-xs text-stone-500 border-b border-stone-300 hover:text-stone-800 transition">Return to Home</a>
-                            </div>
-                        `;
-                        return; // 結束執行，不再往下排版
+                    if (allBlocks.length === 0) {
+                        loadingElement.innerText = "No details found.";
+                        return;
                     }
 
-                    // 4. 開始依序渲染網格積木
-                    blocks.forEach(item => {
-                        const type = item.Type ? item.Type.toLowerCase().trim() : '';
+                    // 清空舞台
+                    leftGrid.innerHTML = "";
+                    rightPanel.innerHTML = "";
+                    
+                    // 1. 找出右半邊要用的「大標題」和「第一張首圖」
+                    const titleBlock = allBlocks.find(item => item.Type && item.Type.toLowerCase().trim() === 'title');
+                    const firstImageBlock = allBlocks.find(item => item.Type && item.Type.toLowerCase().trim() === 'image');
 
-                        // 🌟 核心升級：讀取 Span 欄位，設定電腦版的跨欄寬度
+                    // 渲染右半邊 (右聲道)
+                    if (titleBlock) {
+                        rightPanel.innerHTML += `
+                            <div class="w-full mb-8 fade-in-up">
+                                ${titleBlock.Year ? `<span class="text-[10px] tracking-widest text-stone-400 font-mono uppercase block mb-2">[ ${titleBlock.Year} ]</span>` : ''}
+                                <h1 class="text-2xl md:text-4xl text-stone-800 tracking-[-0.03em] font-bold uppercase leading-none mb-3" style="font-family: 'ofelia-text', sans-serif;">
+                                    ${titleBlock.Description || ''} 
+                                </h1>
+                                ${titleBlock.SubTitle ? `<p class="text-xs text-stone-400 tracking-wide">${titleBlock.SubTitle}</p>` : ''}
+                                ${titleBlock.RoleDetail ? `<p class="text-[10px] tracking-widest text-stone-400 font-mono uppercase mt-4">[ ROLE: ${titleBlock.RoleDetail} ]</p>` : ''}
+                            </div>
+                        `;
+                    }
+                    if (firstImageBlock) {
+                        rightPanel.innerHTML += `
+                            <div class="w-full flex-1 min-h-[40vh] bg-stone-200 overflow-hidden fade-in-up">
+                                <img src="${firstImageBlock.ImgUrl}" class="w-full h-full object-cover">
+                            </div>
+                        `;
+                    }
+
+                    // 2. 剩下的物件，通通丟去左半邊排成「小圖與文字陣列」
+                    allBlocks.forEach(item => {
+                        // 跳過已經被右邊拿去當首圖的那張圖
+                        if (item === firstImageBlock || item === titleBlock) return;
+
+                        const type = item.Type ? item.Type.toLowerCase().trim() : '';
                         const spanClass = item.Span ? `md:col-span-${item.Span}` : 'md:col-span-1';
 
                         if (type === 'image') {
-                            container.innerHTML += `
-                                <div class="relative group aspect-square md:aspect-auto h-full min-h-[50vw] md:min-h-[20vw] bg-stone-200 overflow-hidden fade-in-up ${spanClass}">
+                            leftGrid.innerHTML += `
+                                <div class="relative group aspect-square bg-stone-200 overflow-hidden fade-in-up ${spanClass}">
                                     <img src="${item.ImgUrl}" class="w-full h-full object-cover">
                                 </div>
                             `;
                         } else if (type === 'text') {
-                            container.innerHTML += `
-                                <div class="aspect-square md:aspect-auto flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up ${spanClass}">
-                                    <p class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full mb-4" style="font-variation-settings: 'wght' 250;">
-                                        ${item.TextContent || ''}
+                            leftGrid.innerHTML += `
+                                <div class="flex flex-col justify-start items-start p-2 fade-in-up ${spanClass}">
+                                    <p class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full">
+                                        ${item.Description || ''} 
                                     </p>
-                                    ${item.RoleDetail ? `
-                                        <span class="text-[10px] tracking-widest text-stone-400 uppercase font-mono mt-auto pt-2">
-                                            [ ROLE: ${item.RoleDetail} ]
-                                        </span>
-                                    ` : ''}
-                                </div>
-                            `;
-                        } else if (type === 'title') {
-                            container.innerHTML += `
-                                <div class="aspect-square md:aspect-auto flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden ${spanClass}">
-                                    ${item.Year ? `
-                                        <span class="text-[10px] tracking-widest text-stone-400 font-mono uppercase mb-2">
-                                            [ ${item.Year} ]
-                                        </span>
-                                    ` : ''}
-
-                                    <h1 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words mb-3" style="font-family: 'ofelia-text', 'source-han-sans-tw-variable', sans-serif; font-variation-settings: 'wght' 700;">
-                                        ${item.TextContent || ''}
-                                    </h1>
-
-                                    ${item.SubTitle ? `
-                                        <p class="text-xs text-stone-400 tracking-wide text-left" style="font-variation-settings: 'wght' 250;">
-                                            ${item.SubTitle}
-                                        </p>
-                                    ` : ''}
                                 </div>
                             `;
                         } else if (type === 'blank') {
-                            container.innerHTML += `
+                            leftGrid.innerHTML += `
                                 <div class="hidden md:block ${spanClass}"></div>
                             `;
                         }
                     });
 
-                    // 顯示內容，隱藏 Loading
+                    // 關閉 Loading，顯示舞台
                     loadingElement.style.display = 'none';
-                    container.classList.remove('hidden');
+                    mainContainer.classList.remove('hidden');
                 })
                 .catch(error => {
                     console.error("Error:", error);
