@@ -6,6 +6,7 @@
     <title>moori｜Portfolio</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <script>
     (function(d) {
@@ -99,7 +100,6 @@
     </footer>
 
     <script>
-    // 1. 填入妳最新部署的 API URL
     const API_URL = "https://script.google.com/macros/s/AKfycbwAuHyTZNeobDQQVyrxt22y5Mm5J7IWJXBOsYOUoP6ui2lANlJ6IZMPCX0kKZt262uO/exec";
 
     fetch(API_URL)
@@ -154,7 +154,7 @@
             }
         }
 
-        // --- 第二部分：處理 Illustrations ---
+        // --- 第二部分：處理 Illustrations (防白底閃爍版) ---
         const illustrationsContainer = document.getElementById("illustrations-container");
         if (data.Illustrations && illustrationsContainer) {
             illustrationsContainer.innerHTML = ""; 
@@ -166,37 +166,27 @@
                 const imageUrl = item.IllusImg || ''; 
 
                 if (type === 'image') {
-                    // 🌟 【Scenario A】: 原本是圖片格 -> Hover 變成標題文字
                     illustrationsContainer.innerHTML += `
-                        <a href="${targetLink}" class="block relative aspect-square group z-0 hover:z-50 cursor-crosshair fade-in-up transition-all duration-300">
+                        <a href="${targetLink}" class="block relative aspect-square group z-0 hover:z-50 cursor-crosshair fade-in-up">
                             
-                            <div class="absolute inset-0 bg-stone-200 transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0 bg-stone-100 z-10">
-                                <img src="${imageUrl}" class="w-full h-full object-cover">
-                            </div>
-
-                            <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 transition-opacity duration-500 ease-out opacity-0 group-hover:opacity-100 z-20 pointer-events-none">
+                            <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 z-10 pointer-events-none">
                                 <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
                                 style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">
                                 ${title}
                                 </h3>
                             </div>
+
+                            <div class="absolute inset-0 transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0 z-20">
+                                <img src="${imageUrl}" class="w-full h-full object-cover">
+                            </div>
                         </a>
                     `;
                 } else if (type === 'title') {
-                    // 🌟 【Scenario B】: 原本是標題格 -> Hover 變成彩色圖片
-                    
                     if (imageUrl) {
                         illustrationsContainer.innerHTML += `
-                            <a href="${targetLink}" class="block relative aspect-square group z-0 hover:z-50 cursor-crosshair fade-in-up transition-all duration-300">
+                            <a href="${targetLink}" class="block relative aspect-square group z-0 hover:z-50 cursor-crosshair fade-in-up">
                                 
-                                <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 transition-opacity duration-300 opacity-100 group-hover:opacity-0 z-10 overflow-hidden">
-                                    <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
-                                    style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">
-                                    ${title}
-                                    </h3>
-                                </div>
-
-                                <div class="absolute inset-0 w-full h-full bg-stone-200 transition-opacity duration-500 ease-out opacity-0 group-hover:opacity-100 z-20 pointer-events-none overflow-hidden">
+                                <div class="absolute inset-0 z-10 overflow-hidden">
                                     <img src="${imageUrl}" class="w-full h-full object-cover">
                                     <div class="absolute inset-0 bg-stone-900/20 pointer-events-none">
                                         <div class="absolute top-0 left-0 pt-[15px] pl-[15px] text-left w-full">
@@ -205,6 +195,13 @@
                                             </span>
                                         </div>
                                     </div>
+                                </div>
+
+                                <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 transition-opacity duration-300 opacity-100 group-hover:opacity-0 z-20 overflow-hidden">
+                                    <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
+                                    style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">
+                                    ${title}
+                                    </h3>
                                 </div>
                             </a>
                         `;
@@ -219,7 +216,7 @@
             });
         }
 
-        // --- 第三部分：處理 Projects ---
+        // --- 第三部分：處理 Projects (防白底閃爍版) ---
         const projectsContainer = document.getElementById("projects-container");
         if (data.Projects && projectsContainer) {
             projectsContainer.innerHTML = "";
@@ -231,36 +228,27 @@
                 const imageUrl = item.ProjectImg || ''; 
 
                 if (type === 'image') {
-                    // 🌟 【Scenario A】: 原本是圖片格 -> Hover 變成標題文字
                     projectsContainer.innerHTML += `
-                        <a href="${targetLink}" class="block relative aspect-square group z-0 hover:z-50 cursor-crosshair fade-in-up transition-all duration-300">
+                        <a href="${targetLink}" class="block relative aspect-square group z-0 hover:z-50 cursor-crosshair fade-in-up">
                             
-                            <div class="absolute inset-0 bg-stone-200 transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0 bg-stone-100 z-10">
-                                <img src="${imageUrl}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-[filter] duration-500 ease-out">
-                            </div>
-
-                            <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 transition-opacity duration-500 ease-out opacity-0 group-hover:opacity-100 z-20 pointer-events-none">
+                            <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 z-10 pointer-events-none">
                                 <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
                                 style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">
                                 ${title}
                                 </h3>
                             </div>
+
+                            <div class="absolute inset-0 transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0 z-20">
+                                <img src="${imageUrl}" class="w-full h-full object-cover">
+                            </div>
                         </a>
                     `;
                 } else if (type === 'title') {
-                    // 🌟 【Scenario B】: 原本是標題格 -> Hover 變成彩色圖片
                     if (imageUrl) {
                         projectsContainer.innerHTML += `
-                            <a href="${targetLink}" class="block relative aspect-square group z-0 hover:z-50 cursor-crosshair fade-in-up transition-all duration-300">
+                            <a href="${targetLink}" class="block relative aspect-square group z-0 hover:z-50 cursor-crosshair fade-in-up">
                                 
-                                <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 transition-opacity duration-300 opacity-100 group-hover:opacity-0 z-10 overflow-hidden">
-                                    <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
-                                    style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">
-                                    ${title}
-                                    </h3>
-                                </div>
-
-                                <div class="absolute inset-0 w-full h-full bg-stone-200 transition-opacity duration-500 ease-out opacity-0 group-hover:opacity-100 z-20 pointer-events-none overflow-hidden">
+                                <div class="absolute inset-0 z-10 overflow-hidden">
                                     <img src="${imageUrl}" class="w-full h-full object-cover">
                                     <div class="absolute inset-0 bg-stone-900/20 pointer-events-none">
                                         <div class="absolute top-0 left-0 pt-[15px] pl-[15px] text-left w-full">
@@ -269,6 +257,13 @@
                                             </span>
                                         </div>
                                     </div>
+                                </div>
+
+                                <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 transition-opacity duration-300 opacity-100 group-hover:opacity-0 z-20 overflow-hidden">
+                                    <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
+                                    style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">
+                                    ${title}
+                                    </h3>
                                 </div>
                             </a>
                         `;
@@ -283,7 +278,7 @@
             });
         }
         
-        // --- 第四部分：處理 Courses ---
+        // --- 第四部分：處理 Courses (自由拼圖網格版) ---
         const coursesContainer = document.getElementById("courses-container");
         if (data.Courses && coursesContainer) {
             coursesContainer.innerHTML = "";
