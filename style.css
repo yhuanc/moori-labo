@@ -18,6 +18,31 @@ h1, h2, h3, .font-ofelia {
     font-family: 'ofelia-text', "source-han-sans-tw-variable", sans-serif;
 }
 
+/* ✨ 定義一個微微上下漂浮的關鍵幀動畫 */
+@keyframes soft-float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px); /* 往上漂浮 8px，可以依喜好微調數字 */
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* 🪄 定義一個可以套用的動畫類別 */
+.hover-float:hover {
+  /* 套用動畫，持續 3 秒，線性緩動，無限循環 */
+  animation: soft-float 3s ease-in-out infinite;
+  
+  /* 加上絲滑的過渡，確保 Hover 的瞬間和移開的瞬間都很流暢 */
+  transition: transform 0.5s ease-out;
+  
+  /* 確保 Hover 時不會有滑鼠穿透的問題 */
+  pointer-events: auto !important;
+}
+
 /* 背景霧氣動畫 (The Mist Effect) */
 .mist-orb {
     position: absolute;

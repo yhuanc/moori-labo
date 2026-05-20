@@ -34,6 +34,7 @@
 
         <div class="relative z-10 flex flex-col justify-between h-full pt-12 md:pt-20">
             
+            <!--如果 nav 要加入滑動效果，在下面行 class="" 加上 jelly-mover 即可-->
             <nav class="flex flex-col space-y-3 ml-[0vw] md:ml-[0.4vw]">
                 <a id="nav-work" href="#work" class="text-white/80 hover:text-white/30 text-sm md:text-base tracking-[0.2em] uppercase transition w-max">Work</a>
                 <a id="nav-about" href="about.html" class="text-white/80 hover:text-white/30 text-sm md:text-base tracking-[0.2em] uppercase transition w-max">About</a>
@@ -44,9 +45,10 @@
                 <p id="hero-subtitle" class="text-white/70 text-sm md:text-base tracking-[0.2em] uppercase mb-0 md:mb-[-40px] ml-[0vw] md:ml-[0.4vw]">
                     Light in the Mist.
                 </p>
-                <h1 class="text-[28vw] md:text-[22vw] text-[#fafafa]/80 leading-none tracking-tighter drop-shadow-[0_10px_20px_rgba(0,0,0,0.04)] -ml-[2.5vw] md:-ml-[1.5vw]" 
-                    style="font-family: 'ofelia-text', sans-serif; font-weight: 700 !important;">
-                    <span id="hero-title">moori</span><span class="text-[#fafafa]/70">.</span>
+                <h1 class="jelly-mover text-[28vw] md:text-[22vw] text-[#fafafa]/80 leading-none tracking-tighter drop-shadow-[0_10px_20px_rgba(0,0,0,0.04)] -ml-[2.5vw] md:-ml-[1.5vw]" 
+                style="font-family: 'ofelia-text', sans-serif; font-weight: 700 !important;"
+                data-wobble-factor="0.05">
+                <span id="hero-title">moori</span><span class="text-[#fafafa]/70">.</span>
                 </h1>
             </div>
         </div>
@@ -56,11 +58,10 @@
         
         <section class="mb-32">
             <h2 class="text-xs tracking-widest text-stone-400 mb-8 uppercase border-b border-stone-200 pb-2">Illustrations</h2>
-            
             <div id="illustrations-container" class="grid grid-cols-2 md:grid-cols-5 gap-4 items-start">
                 <p class="text-stone-400 text-sm">插畫載入中...</p>
             </div>
-            </section>
+        </section>
 
         <section class="mb-32">
             <h2 class="text-xs tracking-widest text-stone-400 mb-8 uppercase border-b border-stone-200 pb-2">Projects</h2>
@@ -80,22 +81,15 @@
 
     <footer class="py-16 md:py-24 relative z-10 bg-stone-50 border-t border-stone-100 mt-20">
         <div class="w-[90vw] md:w-[72vw] mx-auto">
-            
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6">
-                
                 <div id="footer-logo" class="text-4xl md:text-5xl font-light text-stone-800 tracking-tighter" 
                 style="font-family: 'ofelia-text', 'source-han-sans-tw-variable', sans-serif;">
                 </div>
-
-                <nav id="footer-links-container" class="flex flex-wrap justify-start md:justify-end gap-x-6 gap-y-2">
-                    </nav>
+                <nav id="footer-links-container" class="flex flex-wrap justify-start md:justify-end gap-x-6 gap-y-2"></nav>
             </div>
-
             <div class="border-t border-stone-200 pt-8 text-center md:text-center">
-                <p id="footer-copyright" class="text-[10px] md:text-xs tracking-widest text-stone-400">
-                    </p>
+                <p id="footer-copyright" class="text-[10px] md:text-xs tracking-widest text-stone-400"></p>
             </div>
-            
         </div>
     </footer>
 
@@ -105,9 +99,7 @@
     fetch(API_URL)
     .then(response => response.json())
     .then(data => {
-        console.log("成功抓到全站資料：", data);
-
-        // --- 第一部分：處理 LandingArea ---
+        // --- 處理 LandingArea ---
         if (data.LandingArea) {
             const landingMap = {
                 'HeroSubtitle': 'hero-subtitle',
@@ -118,47 +110,33 @@
                 'FooterLogo': 'footer-logo',
                 'FooterCopyRight': 'footer-copyright'
             };
-
             Object.keys(landingMap).forEach(key => {
                 const setting = data.LandingArea.find(item => item.Key === key);
                 const element = document.getElementById(landingMap[key]);
-                if (setting && element) {
-                    element.innerText = setting.Value;
-                }
+                if (setting && element) { element.innerText = setting.Value; }
             });
-
             const heroImg = data.LandingArea.find(item => item.Key === 'HeroImage');
             if (heroImg && heroImg.Value) {
                 document.getElementById("hero-header").style.backgroundImage = `url('${heroImg.Value}')`;
             }
-
             const footerLinksContainer = document.getElementById("footer-links-container");
             if (footerLinksContainer) {
                 footerLinksContainer.innerHTML = '';
                 for (let i = 1; i <= 5; i++) {
                     const textItem = data.LandingArea.find(item => item.Key === `FooterLink${i}_Text`);
                     const urlItem = data.LandingArea.find(item => item.Key === `FooterLink${i}_Url`);
-                    
                     if (textItem && textItem.Value && urlItem && urlItem.Value) {
                         let linkHref = urlItem.Value.trim();
-                        if (linkHref.includes('@') && !linkHref.startsWith('mailto:') && !linkHref.startsWith('http')) {
-                            linkHref = `mailto:${linkHref}`;
-                        }
-                        footerLinksContainer.innerHTML += `
-                            <a href="${linkHref}" target="_blank" class="text-xs md:text-sm tracking-widest text-stone-600 hover:text-stone-400 transition duration-300">
-                                ${textItem.Value}
-                            </a>
-                        `;
+                        footerLinksContainer.innerHTML += `<a href="${linkHref}" target="_blank" class="text-xs md:text-sm tracking-widest text-stone-600 hover:text-stone-400 transition duration-300">${textItem.Value}</a>`;
                     }
                 }
             }
         }
 
-        // --- 第二部分：處理 Illustrations (防白底閃爍版) ---
+        // --- 處理 Illustrations ---
         const illustrationsContainer = document.getElementById("illustrations-container");
         if (data.Illustrations && illustrationsContainer) {
             illustrationsContainer.innerHTML = ""; 
-
             data.Illustrations.forEach((item) => {
                 const type = item.Type ? item.Type.toLowerCase().trim() : '';
                 const targetLink = item.ID ? `pagecontent.html?type=illus&id=${item.ID}` : '#';
@@ -167,60 +145,34 @@
 
                 if (type === 'image') {
                     illustrationsContainer.innerHTML += `
-                        <a href="${targetLink}" class="block relative aspect-square group z-0 hover:z-50 cursor-crosshair fade-in-up">
-                            
+                        <a href="${targetLink}" class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair">
                             <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 z-10 pointer-events-none">
-                                <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
-                                style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">
-                                ${title}
-                                </h3>
+                                <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3>
                             </div>
-
-                            <div class="absolute inset-0 transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0 z-20">
-                                <img src="${imageUrl}" class="w-full h-full object-cover">
-                            </div>
-                        </a>
-                    `;
+                            <div class="absolute inset-0 transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0 z-20"><img src="${imageUrl}" class="w-full h-full object-cover"></div>
+                        </a>`;
                 } else if (type === 'title') {
                     if (imageUrl) {
                         illustrationsContainer.innerHTML += `
-                            <a href="${targetLink}" class="block relative aspect-square group z-0 hover:z-50 cursor-crosshair fade-in-up">
-                                
-                                <div class="absolute inset-0 z-10 overflow-hidden">
-                                    <img src="${imageUrl}" class="w-full h-full object-cover">
-                                    <div class="absolute inset-0 bg-stone-900/20 pointer-events-none">
-                                        <div class="absolute top-0 left-0 pt-[15px] pl-[15px] text-left w-full">
-                                            <span class="text-white text-xs tracking-widest uppercase font-medium drop-shadow-md">
-                                                ${title}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
+                            <a href="${targetLink}" class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair">
+                                <div class="absolute inset-0 z-10 overflow-hidden"><img src="${imageUrl}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-stone-900/10 pointer-events-none"></div></div>
                                 <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 transition-opacity duration-300 opacity-100 group-hover:opacity-0 z-20 overflow-hidden">
-                                    <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
-                                    style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">
-                                    ${title}
-                                    </h3>
+                                    <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3>
                                 </div>
-                            </a>
-                        `;
+                            </a>`;
                     } else {
-                        illustrationsContainer.innerHTML += `<div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden"><h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3></div>`;
+                        illustrationsContainer.innerHTML += `<div class="jelly-mover aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 overflow-hidden"><h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3></div>`;
                     }
                 } else if (type === 'text') {
-                    illustrationsContainer.innerHTML += `<div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden"><p class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full">${item.IllusDescription || ''}</p></div>`;
-                } else if (type === 'blank') {
-                    illustrationsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    illustrationsContainer.innerHTML += `<div class="jelly-mover aspect-square flex flex-col justify-between items-start p-0 overflow-hidden h-full w-full"><div class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full whitespace-pre-line pr-2 mb-2 flex-shrink-0">${item.IllusDescription || ''}</div></div>`;
                 }
             });
         }
 
-        // --- 第三部分：處理 Projects (防白底閃爍版) ---
+        // --- 處理 Projects ---
         const projectsContainer = document.getElementById("projects-container");
         if (data.Projects && projectsContainer) {
             projectsContainer.innerHTML = "";
-            
             data.Projects.forEach((item) => {
                 const type = item.Type ? item.Type.toLowerCase().trim() : '';
                 const targetLink = item.ID ? `pagecontent.html?type=project&id=${item.ID}` : '#';
@@ -229,95 +181,99 @@
 
                 if (type === 'image') {
                     projectsContainer.innerHTML += `
-                        <a href="${targetLink}" class="block relative aspect-square group z-0 hover:z-50 cursor-crosshair fade-in-up">
-                            
+                        <a href="${targetLink}" class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair">
                             <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 z-10 pointer-events-none">
-                                <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
-                                style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">
-                                ${title}
-                                </h3>
+                                <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3>
                             </div>
-
-                            <div class="absolute inset-0 transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0 z-20">
-                                <img src="${imageUrl}" class="w-full h-full object-cover">
-                            </div>
-                        </a>
-                    `;
+                            <div class="absolute inset-0 transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0 z-20"><img src="${imageUrl}" class="w-full h-full object-cover"></div>
+                        </a>`;
                 } else if (type === 'title') {
                     if (imageUrl) {
                         projectsContainer.innerHTML += `
-                            <a href="${targetLink}" class="block relative aspect-square group z-0 hover:z-50 cursor-crosshair fade-in-up">
-                                
-                                <div class="absolute inset-0 z-10 overflow-hidden">
-                                    <img src="${imageUrl}" class="w-full h-full object-cover">
-                                    <div class="absolute inset-0 bg-stone-900/20 pointer-events-none">
-                                        <div class="absolute top-0 left-0 pt-[15px] pl-[15px] text-left w-full">
-                                            <span class="text-white text-xs tracking-widest uppercase font-medium drop-shadow-md">
-                                                ${title}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
+                            <a href="${targetLink}" class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair">
+                                <div class="absolute inset-0 z-10 overflow-hidden"><img src="${imageUrl}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-stone-900/10 pointer-events-none"></div></div>
                                 <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 transition-opacity duration-300 opacity-100 group-hover:opacity-0 z-20 overflow-hidden">
-                                    <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" 
-                                    style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">
-                                    ${title}
-                                    </h3>
+                                    <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3>
                                 </div>
-                            </a>
-                        `;
+                            </a>`;
                     } else {
-                        projectsContainer.innerHTML += `<div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden"><h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-bold uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3></div>`;
+                        projectsContainer.innerHTML += `<div class="jelly-mover aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 overflow-hidden"><h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3></div>`;
                     }
                 } else if (type === 'text') {
-                    projectsContainer.innerHTML += `<div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden"><p class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full">${item.ProjectDescription || ''}</p></div>`;
-                } else if (type === 'blank') {
-                    projectsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    projectsContainer.innerHTML += `<div class="jelly-mover aspect-square flex flex-col justify-between items-start p-0 overflow-hidden h-full w-full"><div class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full whitespace-pre-line pr-2 mb-2 flex-shrink-0">${item.ProjectDescription || ''}</div></div>`;
                 }
             });
         }
         
-        // --- 第四部分：處理 Courses (自由拼圖網格版) ---
+        // --- 處理 Courses ---
         const coursesContainer = document.getElementById("courses-container");
         if (data.Courses && coursesContainer) {
             coursesContainer.innerHTML = "";
-            
             data.Courses.forEach((item) => {
                 const type = item.Type ? item.Type.toLowerCase().trim() : '';
-
                 if (type === 'image') {
                     coursesContainer.innerHTML += `
-                        <div class="block relative group aspect-square bg-stone-200 overflow-hidden fade-in-up">
+                        <div class="jelly-mover block relative group aspect-square bg-stone-200 overflow-hidden">
                             <img src="${item.CourseImg}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-in-out">
-                            
                             <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none">
-                                ${item.CourseStatus ? `
-                                <div class="absolute bottom-0 left-0 pb-[15px] pl-[15px] text-left w-full">
-                                    <span class="text-white text-[10px] tracking-widest uppercase font-mono drop-shadow-md">
-                                        [ ${item.CourseStatus} ]
-                                    </span>
-                                </div>
-                                ` : ''}
+                                ${item.CourseStatus ? `<div class="absolute bottom-0 left-0 pb-[15px] pl-[15px] text-left w-full"><span class="text-white text-[10px] tracking-widest uppercase font-mono drop-shadow-md">[ ${item.CourseStatus} ]</span></div>` : ''}
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 } else if (type === 'text') {
-                    coursesContainer.innerHTML += `<div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden"><p class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full">${item.CourseDescription || ''}</p></div>`;
+                    coursesContainer.innerHTML += `<div class="jelly-mover aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 overflow-hidden"><p class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full whitespace-pre-line">${item.CourseDescription || ''}</p></div>`;
                 } else if (type === 'title') {
-                    coursesContainer.innerHTML += `<div class="aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 fade-in-up overflow-hidden"><h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-wide font-light uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif; font-variation-settings: 'wght' 300;">${item.CourseName || ''}</h3></div>`;
+                    coursesContainer.innerHTML += `<div class="jelly-mover aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 overflow-hidden"><h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-wide font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif; font-variation-settings: 'wght' 300;">${item.CourseName || ''}</h3></div>`;
                 } else if (type === 'form') {
-                    const targetLink = item.FormLink ? item.FormLink : '#';
-                    coursesContainer.innerHTML += `<div class="aspect-square flex flex-col justify-center items-center p-4 fade-in-up bg-stone-100 hover:bg-stone-200 transition duration-500"><a href="${targetLink}" target="_blank" class="text-xs tracking-widest text-stone-600 hover:text-stone-900 uppercase border-b border-stone-400 hover:border-stone-900 pb-1 transition duration-300">Apply / Form</a></div>`;
-                } else if (type === 'blank') {
-                    coursesContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    coursesContainer.innerHTML += `<div class="jelly-mover aspect-square flex flex-col justify-center items-center p-4 bg-stone-100 hover:bg-stone-200 transition duration-500"><a href="${item.FormLink || '#'}" target="_blank" class="text-xs tracking-widest text-stone-600 hover:text-stone-900 uppercase border-b border-stone-400 hover:border-stone-900 pb-1 transition duration-300">Apply / Form</a></div>`;
                 }
             });
         }
-    })
-    .catch(error => {
-        console.error("抓取資料時發生錯誤：", error);
+
+        initJellyWobble();
     });
+
+    // 🚀 強力物理晃動引擎 (Jelly Wobble Physics - Pro Version)
+    function initJellyWobble() {
+        const movers = document.querySelectorAll('.jelly-mover');
+        if (movers.length === 0) return;
+
+        movers.forEach(mover => {
+            mover.style.transition = 'none';
+            mover.style.willChange = 'transform';
+            
+            // 🌟 關鍵修改：檢查標籤上有沒有手動設定的幅度？如果沒有，才給它隨機值
+            if (!mover.dataset.wobbleFactor) {
+                mover.dataset.wobbleFactor = (Math.random() * 0.6 + 0.1).toFixed(2);
+            }
+        });
+
+        let currentScroll = window.scrollY;
+        let velocity = 0;
+
+        function animate() {
+            const newScroll = window.scrollY;
+            const delta = newScroll - currentScroll;
+            currentScroll = newScroll;
+
+            velocity += delta;
+            velocity *= 0.82; // 稍微增加一點摩擦力，讓動作更俐落
+
+            movers.forEach(mover => {
+                const factor = parseFloat(mover.dataset.wobbleFactor);
+                // 位移量乘數
+                let yPos = velocity * factor * -1.2;
+                yPos = Math.max(-100, Math.min(100, yPos)); // 位移極限也稍微放寬
+
+                if (Math.abs(velocity) < 0.05) {
+                    mover.style.transform = `translateY(0px)`;
+                } else {
+                    mover.style.transform = `translateY(${yPos}px)`;
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    }
     </script>
 </body>
 </html>
