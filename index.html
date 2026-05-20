@@ -34,8 +34,7 @@
 
         <div class="relative z-10 flex flex-col justify-between h-full pt-12 md:pt-20">
             
-            <!--如果 nav 要加入滑動效果，在下面行 class="" 加上 jelly-mover 即可-->
-            <nav class="flex flex-col space-y-3 ml-[0vw] md:ml-[0.4vw]">
+            <nav class="jelly-mover flex flex-col space-y-3 ml-[0vw] md:ml-[0.4vw]">
                 <a id="nav-work" href="#work" class="text-white/80 hover:text-white/30 text-sm md:text-base tracking-[0.2em] uppercase transition w-max">Work</a>
                 <a id="nav-about" href="about.html" class="text-white/80 hover:text-white/30 text-sm md:text-base tracking-[0.2em] uppercase transition w-max">About</a>
                 <a id="nav-contact" href="#contact" class="text-white/80 hover:text-white/30 text-sm md:text-base tracking-[0.2em] uppercase transition w-max">Contact</a>
@@ -46,9 +45,8 @@
                     Light in the Mist.
                 </p>
                 <h1 class="jelly-mover text-[28vw] md:text-[22vw] text-[#fafafa]/80 leading-none tracking-tighter drop-shadow-[0_10px_20px_rgba(0,0,0,0.04)] -ml-[2.5vw] md:-ml-[1.5vw]" 
-                style="font-family: 'ofelia-text', sans-serif; font-weight: 700 !important;"
-                data-wobble-factor="0.05">
-                <span id="hero-title">moori</span><span class="text-[#fafafa]/70">.</span>
+                    style="font-family: 'ofelia-text', sans-serif; font-weight: 700 !important;" data-wobble-factor="0.05">
+                    <span id="hero-title">moori</span><span class="text-[#fafafa]/70">.</span>
                 </h1>
             </div>
         </div>
@@ -165,6 +163,9 @@
                     }
                 } else if (type === 'text') {
                     illustrationsContainer.innerHTML += `<div class="jelly-mover aspect-square flex flex-col justify-between items-start p-0 overflow-hidden h-full w-full"><div class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full whitespace-pre-line pr-2 mb-2 flex-shrink-0">${item.IllusDescription || ''}</div></div>`;
+                } else if (type === 'blank') {
+                    // 🌟 漏掉的就是這行，幫妳把佔位符號補回來了！
+                    illustrationsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
                 }
             });
         }
@@ -201,6 +202,9 @@
                     }
                 } else if (type === 'text') {
                     projectsContainer.innerHTML += `<div class="jelly-mover aspect-square flex flex-col justify-between items-start p-0 overflow-hidden h-full w-full"><div class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full whitespace-pre-line pr-2 mb-2 flex-shrink-0">${item.ProjectDescription || ''}</div></div>`;
+                } else if (type === 'blank') {
+                    // 🌟 這裡也補回來了
+                    projectsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
                 }
             });
         }
@@ -225,6 +229,9 @@
                     coursesContainer.innerHTML += `<div class="jelly-mover aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 overflow-hidden"><h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-wide font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif; font-variation-settings: 'wght' 300;">${item.CourseName || ''}</h3></div>`;
                 } else if (type === 'form') {
                     coursesContainer.innerHTML += `<div class="jelly-mover aspect-square flex flex-col justify-center items-center p-4 bg-stone-100 hover:bg-stone-200 transition duration-500"><a href="${item.FormLink || '#'}" target="_blank" class="text-xs tracking-widest text-stone-600 hover:text-stone-900 uppercase border-b border-stone-400 hover:border-stone-900 pb-1 transition duration-300">Apply / Form</a></div>`;
+                } else if (type === 'blank') {
+                    // 🌟 這裡也補回來了
+                    coursesContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
                 }
             });
         }
@@ -241,8 +248,9 @@
             mover.style.transition = 'none';
             mover.style.willChange = 'transform';
             
-            // 🌟 關鍵修改：檢查標籤上有沒有手動設定的幅度？如果沒有，才給它隨機值
+            // 檢查有沒有手動設定幅度（例如巨大 Logo）
             if (!mover.dataset.wobbleFactor) {
+                // 產生隨機浮動，讓錯位感更強烈
                 mover.dataset.wobbleFactor = (Math.random() * 0.6 + 0.1).toFixed(2);
             }
         });
@@ -256,13 +264,13 @@
             currentScroll = newScroll;
 
             velocity += delta;
-            velocity *= 0.82; // 稍微增加一點摩擦力，讓動作更俐落
+            velocity *= 0.82; // 阻尼
 
             movers.forEach(mover => {
                 const factor = parseFloat(mover.dataset.wobbleFactor);
-                // 位移量乘數
+                // 位移量計算
                 let yPos = velocity * factor * -1.2;
-                yPos = Math.max(-100, Math.min(100, yPos)); // 位移極限也稍微放寬
+                yPos = Math.max(-100, Math.min(100, yPos));
 
                 if (Math.abs(velocity) < 0.05) {
                     mover.style.transform = `translateY(0px)`;
