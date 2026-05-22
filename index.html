@@ -34,8 +34,7 @@
 
         <div class="relative z-10 flex flex-col justify-between h-full pt-12 md:pt-20">
             
-            <!-- nav 要滑動的話，在 class 裡插入 jelly-mover 即可 -->
-            <nav class="flex flex-col space-y-3 ml-[0vw] md:ml-[0.4vw]">
+            <nav class="jelly-mover flex flex-col space-y-3 ml-[0vw] md:ml-[0.4vw]">
                 <a id="nav-work" href="#work" class="text-white/80 hover:text-white/30 text-sm md:text-base tracking-[0.2em] uppercase transition w-max">Work</a>
                 <a id="nav-about" href="about.html" class="text-white/80 hover:text-white/30 text-sm md:text-base tracking-[0.2em] uppercase transition w-max">About</a>
                 <a id="nav-contact" href="#contact" class="text-white/80 hover:text-white/30 text-sm md:text-base tracking-[0.2em] uppercase transition w-max">Contact</a>
@@ -141,7 +140,6 @@
                 const targetLink = item.ID ? `pagecontent.html?type=illus&id=${item.ID}` : '#';
                 const title = item.IllusTitle || '';
                 const imageUrl = item.IllusImg || ''; 
-                // 🌟 新增：讀取 Google Sheets 裡的 WobbleFactor
                 const wobble = item.WobbleFactor ? `data-wobble-factor="${item.WobbleFactor}"` : '';
 
                 if (type === 'image') {
@@ -167,7 +165,17 @@
                 } else if (type === 'text') {
                     illustrationsContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-between items-start p-0 overflow-hidden h-full w-full"><div class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full whitespace-pre-line pr-2 mb-2 flex-shrink-0">${item.IllusDescription || ''}</div></div>`;
                 } else if (type === 'blank') {
-                    illustrationsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    // 🌟 插畫區彩蛋語法
+                    if (imageUrl) {
+                        illustrationsContainer.innerHTML += `
+                            <a href="${targetLink}" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair hidden md:block">
+                                <div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-0 group-hover:opacity-100 z-20">
+                                    <img src="${imageUrl}" class="w-full h-full object-cover">
+                                </div>
+                            </a>`;
+                    } else {
+                        illustrationsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    }
                 }
             });
         }
@@ -181,7 +189,6 @@
                 const targetLink = item.ID ? `pagecontent.html?type=project&id=${item.ID}` : '#';
                 const title = item.ProjectName || '';
                 const imageUrl = item.ProjectImg || ''; 
-                // 🌟 新增：讀取 Google Sheets 裡的 WobbleFactor
                 const wobble = item.WobbleFactor ? `data-wobble-factor="${item.WobbleFactor}"` : '';
 
                 if (type === 'image') {
@@ -207,7 +214,17 @@
                 } else if (type === 'text') {
                     projectsContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-between items-start p-0 overflow-hidden h-full w-full"><div class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full whitespace-pre-line pr-2 mb-2 flex-shrink-0">${item.ProjectDescription || ''}</div></div>`;
                 } else if (type === 'blank') {
-                    projectsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    // 🌟 專案區彩蛋語法
+                    if (imageUrl) {
+                        projectsContainer.innerHTML += `
+                            <a href="${targetLink}" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair hidden md:block">
+                                <div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-0 group-hover:opacity-100 z-20">
+                                    <img src="${imageUrl}" class="w-full h-full object-cover">
+                                </div>
+                            </a>`;
+                    } else {
+                        projectsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    }
                 }
             });
         }
@@ -218,7 +235,6 @@
             coursesContainer.innerHTML = "";
             data.Courses.forEach((item) => {
                 const type = item.Type ? item.Type.toLowerCase().trim() : '';
-                // 🌟 新增：讀取 Google Sheets 裡的 WobbleFactor
                 const wobble = item.WobbleFactor ? `data-wobble-factor="${item.WobbleFactor}"` : '';
 
                 if (type === 'image') {
@@ -236,7 +252,18 @@
                 } else if (type === 'form') {
                     coursesContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-center items-center p-4 bg-stone-100 hover:bg-stone-200 transition duration-500"><a href="${item.FormLink || '#'}" target="_blank" class="text-xs tracking-widest text-stone-600 hover:text-stone-900 uppercase border-b border-stone-400 hover:border-stone-900 pb-1 transition duration-300">Apply / Form</a></div>`;
                 } else if (type === 'blank') {
-                    coursesContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    // 🌟 課程區彩蛋語法
+                    if (item.CourseImg) {
+                        const targetLink = item.FormLink ? item.FormLink : '#';
+                        coursesContainer.innerHTML += `
+                            <a href="${targetLink}" target="_blank" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 hidden md:block cursor-pointer">
+                                <div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-0 group-hover:opacity-100 z-20 bg-stone-200">
+                                    <img src="${item.CourseImg}" class="w-full h-full object-cover">
+                                </div>
+                            </a>`;
+                    } else {
+                        coursesContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    }
                 }
             });
         }
@@ -244,7 +271,7 @@
         initJellyWobble();
     });
 
-    // 🚀 強力物理晃動引擎 (Jelly Wobble Physics)
+    // 🚀 加上微震感的強力物理引擎 (Jitter Physics Engine)
     function initJellyWobble() {
         const movers = document.querySelectorAll('.jelly-mover');
         if (movers.length === 0) return;
@@ -252,8 +279,6 @@
         movers.forEach(mover => {
             mover.style.transition = 'none';
             mover.style.willChange = 'transform';
-            
-            // 🌟 檢查如果沒有手動輸入數值，就給予 0.1 ~ 0.7 的隨機動態
             if (!mover.dataset.wobbleFactor) {
                 mover.dataset.wobbleFactor = (Math.random() * 0.6 + 0.1).toFixed(2);
             }
@@ -270,15 +295,24 @@
             velocity += delta;
             velocity *= 0.82; 
 
+            // 🌟 計算全域的「微震強度 (Jitter Intensity)」
+            let jitterIntensity = Math.min(Math.abs(velocity) * 0.01, 1.0);
+
             movers.forEach(mover => {
                 const factor = parseFloat(mover.dataset.wobbleFactor);
+                // 這是主體的上下位移量
                 let yPos = velocity * factor * -1.2;
-                yPos = Math.max(-100, Math.min(100, yPos)); 
+                yPos = Math.max(-40, Math.min(40, yPos)); 
 
                 if (Math.abs(velocity) < 0.05) {
-                    mover.style.transform = `translateY(0px)`;
+                    // 速度趨近停止時，精準歸零，絕不殘留抖動
+                    mover.style.transform = `translate(0px, 0px)`;
                 } else {
-                    mover.style.transform = `translateY(${yPos}px)`;
+                    // 🌟 產生極微小的隨機 XY 偏移，融入主位移中
+                    let jitterX = (Math.random() - 0.5) * jitterIntensity;
+                    let jitterY = (Math.random() - 0.5) * jitterIntensity;
+                    
+                    mover.style.transform = `translate(${jitterX}px, ${yPos + jitterY}px)`;
                 }
             });
             requestAnimationFrame(animate);
