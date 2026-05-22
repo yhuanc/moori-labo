@@ -6,7 +6,7 @@
     <title>moori｜Portfolio</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght=300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <script>
     (function(d) {
@@ -27,7 +27,7 @@
         <div class="mist-orb orb-2"></div>
     </div>
 
-    <header id="hero-header" class="relative w-full h-[100dvh] flex flex-col justify-between bg-stone-200 bg-cover bg-center bg-no-repeat" 
+    <header id="hero-header" class="relative w-full h-screen h-[100dvh] min-h-[100vh] flex flex-col justify-between bg-stone-200 bg-cover bg-center bg-no-repeat" 
         style="background-image: url('https://github.com/yhuanc/moori-labo/blob/master/images/mooriPF_BG.JPG?raw=true');">
     
         <div class="absolute inset-0 bg-gradient-to-b from-stone-900/20 via-transparent to-stone-900/40 pointer-events-none"></div>
@@ -46,13 +46,11 @@
             </p>
             
             <div class="translate-y-[6.3%] md:translate-y-[6.2%]">
-                
                 <h1 class="jelly-mover text-[28vw] md:text-[22vw] text-[#fafafa]/80 leading-none tracking-tighter drop-shadow-[0_10px_20px_rgba(0,0,0,0.04)] -ml-[2.5vw] md:-ml-[1.5vw]" 
-                    style="font-family: 'ofelia-text', sans-serif; font-weight: 700 !important;" data-wobble-factor="0.05">
-                    <span id="hero-title">moori</span><span class="text-[#fafafa]/70">.</span>
+                style="font-family: 'ofelia-text', sans-serif; font-weight: 700 !important;" data-wobble-factor="0.05">
+                <span id="hero-title">moori</span><span class="text-[#fafafa]/70">.</span>
                 </h1>
-                
-            </div> 
+            </div>
         </div>
     </header>
 
@@ -97,6 +95,9 @@
 
     <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwAuHyTZNeobDQQVyrxt22y5Mm5J7IWJXBOsYOUoP6ui2lANlJ6IZMPCX0kKZt262uO/exec";
+
+    // 🌟 全域字體大小防爆設定
+    const titleTextClass = "text-xl sm:text-2xl lg:text-lg xl:text-xl 2xl:text-3xl text-stone-800 tracking-[-0.03em] font-medium uppercase text-left leading-none w-full break-words";
 
     fetch(API_URL)
     .then(response => response.json())
@@ -150,7 +151,7 @@
                     illustrationsContainer.innerHTML += `
                         <a href="${targetLink}" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair">
                             <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 z-10 pointer-events-none">
-                                <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3>
+                                <h3 class="${titleTextClass}" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3>
                             </div>
                             <div class="absolute inset-0 transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0 z-20"><img src="${imageUrl}" class="w-full h-full object-cover"></div>
                         </a>`;
@@ -160,16 +161,26 @@
                             <a href="${targetLink}" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair">
                                 <div class="absolute inset-0 z-10 overflow-hidden"><img src="${imageUrl}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-stone-900/10 pointer-events-none"></div></div>
                                 <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 transition-opacity duration-300 opacity-100 group-hover:opacity-0 z-20 overflow-hidden">
-                                    <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3>
+                                    <h3 class="${titleTextClass}" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3>
                                 </div>
                             </a>`;
                     } else {
-                        illustrationsContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 overflow-hidden"><h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3></div>`;
+                        illustrationsContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 overflow-hidden"><h3 class="${titleTextClass}" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3></div>`;
                     }
                 } else if (type === 'text') {
                     illustrationsContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-between items-start p-0 overflow-hidden h-full w-full"><div class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full whitespace-pre-line pr-2 mb-2 flex-shrink-0">${item.IllusDescription || ''}</div></div>`;
                 } else if (type === 'blank') {
-                    illustrationsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    // 🌟 修正：補上 bg-stone-50/0 虛擬感應面，徹底解決瀏覽器 Hover 失靈問題
+                    if (imageUrl) {
+                        illustrationsContainer.innerHTML += `
+                            <a href="${targetLink}" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair hidden sm:block bg-stone-50/0">
+                                <div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-0 group-hover:opacity-100 z-20">
+                                    <img src="${imageUrl}" class="w-full h-full object-cover">
+                                </div>
+                            </a>`;
+                    } else {
+                        illustrationsContainer.innerHTML += `<div class="aspect-square hidden sm:block"></div>`;
+                    }
                 }
             });
         }
@@ -189,7 +200,7 @@
                     projectsContainer.innerHTML += `
                         <a href="${targetLink}" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair">
                             <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 z-10 pointer-events-none">
-                                <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3>
+                                <h3 class="${titleTextClass}" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3>
                             </div>
                             <div class="absolute inset-0 transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0 z-20"><img src="${imageUrl}" class="w-full h-full object-cover"></div>
                         </a>`;
@@ -199,16 +210,26 @@
                             <a href="${targetLink}" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair">
                                 <div class="absolute inset-0 z-10 overflow-hidden"><img src="${imageUrl}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-stone-900/10 pointer-events-none"></div></div>
                                 <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 transition-opacity duration-300 opacity-100 group-hover:opacity-0 z-20 overflow-hidden">
-                                    <h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3>
+                                    <h3 class="${titleTextClass}" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3>
                                 </div>
                             </a>`;
                     } else {
-                        projectsContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 overflow-hidden"><h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-[-0.03em] font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3></div>`;
+                        projectsContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 overflow-hidden"><h3 class="${titleTextClass}" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3></div>`;
                     }
                 } else if (type === 'text') {
                     projectsContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-between items-start p-0 overflow-hidden h-full w-full"><div class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full whitespace-pre-line pr-2 mb-2 flex-shrink-0">${item.ProjectDescription || ''}</div></div>`;
                 } else if (type === 'blank') {
-                    projectsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    // 🌟 修正：同樣補上 bg-stone-50/0 確保專案區彩蛋觸發
+                    if (imageUrl) {
+                        projectsContainer.innerHTML += `
+                            <a href="${targetLink}" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair hidden sm:block bg-stone-50/0">
+                                <div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-0 group-hover:opacity-100 z-20">
+                                    <img src="${imageUrl}" class="w-full h-full object-cover">
+                                </div>
+                            </a>`;
+                    } else {
+                        projectsContainer.innerHTML += `<div class="aspect-square hidden sm:block"></div>`;
+                    }
                 }
             });
         }
@@ -226,18 +247,37 @@
                     coursesContainer.innerHTML += `
                         <div ${wobble} class="jelly-mover block relative group aspect-square bg-stone-200 overflow-hidden">
                             <img src="${imageUrl}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-in-out">
-                            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none">
+                            
+                            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none z-30">
                                 ${item.CourseStatus ? `<div class="absolute bottom-0 left-0 pb-[15px] pl-[15px] text-left w-full"><span class="text-white text-[10px] tracking-widest uppercase font-mono drop-shadow-md">[ ${item.CourseStatus} ]</span></div>` : ''}
+                            </div>
+
+                            <div class="absolute inset-0 bg-stone-900/40 hidden sm:flex lg:hidden flex-col justify-center items-center p-4 z-20 pointer-events-none transition-opacity duration-500 opacity-0 group-hover:opacity-100">
+                                <h3 class="text-white text-2xl tracking-wide font-medium uppercase text-center leading-none break-words" style="font-family: 'Outfit', sans-serif;">
+                                    ${item.CourseName || ''}
+                                </h3>
                             </div>
                         </div>`;
                 } else if (type === 'text') {
                     coursesContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 overflow-hidden"><p class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full whitespace-pre-line">${item.CourseDescription || ''}</p></div>`;
                 } else if (type === 'title') {
-                    coursesContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 overflow-hidden"><h3 class="text-xl md:text-2xl lg:text-3xl text-stone-800 tracking-wide font-medium uppercase text-left leading-none w-full break-words" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif; font-variation-settings: 'wght' 300;">${item.CourseName || ''}</h3></div>`;
+                    // Courses 標題格：平板隱藏 (sm:hidden)，電腦顯示 (lg:flex)
+                    coursesContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex sm:hidden lg:flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 overflow-hidden"><h3 class="${titleTextClass} tracking-wide font-medium" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif; font-variation-settings: 'wght' 300;">${item.CourseName || ''}</h3></div>`;
                 } else if (type === 'form') {
                     coursesContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-center items-center p-4 bg-stone-100 hover:bg-stone-200 transition duration-500"><a href="${item.FormLink || '#'}" target="_blank" class="text-xs tracking-widest text-stone-600 hover:text-stone-900 uppercase border-b border-stone-400 hover:border-stone-900 pb-1 transition duration-300">Apply / Form</a></div>`;
                 } else if (type === 'blank') {
-                    coursesContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    // Courses 留白格：平板隱藏，只有電腦顯示 (hidden lg:block)
+                    if (imageUrl) {
+                        const targetLink = item.FormLink ? item.FormLink : '#';
+                        coursesContainer.innerHTML += `
+                            <a href="${targetLink}" target="_blank" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 hidden lg:block cursor-pointer bg-stone-50/0">
+                                <div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-0 group-hover:opacity-100 z-20">
+                                    <img src="${imageUrl}" class="w-full h-full object-cover">
+                                </div>
+                            </a>`;
+                    } else {
+                        coursesContainer.innerHTML += `<div class="aspect-square hidden lg:block"></div>`;
+                    }
                 }
             });
         }
@@ -245,40 +285,76 @@
         initJellyWobble();
     });
 
-    // 🚀 強力物理晃動引擎 (Jelly Wobble Physics - Pro Version)
+    // 🚀 終極雙引擎：Q彈物理 (Spring) + 微震阻尼 (Jitter)
     function initJellyWobble() {
         const movers = document.querySelectorAll('.jelly-mover');
         if (movers.length === 0) return;
 
-        movers.forEach(mover => {
+        const states = Array.from(movers).map(mover => {
             mover.style.transition = 'none';
             mover.style.willChange = 'transform';
             
-            // 使用較內斂的隨機幅度（0.15 ~ 0.4），創造溫和的錯位感
-            mover.dataset.wobbleFactor = (Math.random() * 0.25 + 0.15).toFixed(2);
+            let factor = mover.dataset.wobbleFactor 
+                ? parseFloat(mover.dataset.wobbleFactor)
+                : (Math.random() * 0.2 + 0.1); 
+
+            return {
+                element: mover,
+                factor: factor,
+                currentY: 0,
+                velocity: 0
+            };
         });
 
-        let currentScroll = window.scrollY;
-        let velocity = 0;
+        let lastScrollY = window.scrollY;
+        let globalScrollVelocity = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            const delta = currentScrollY - lastScrollY;
+            lastScrollY = currentScrollY;
+
+            states.forEach(state => {
+                state.velocity += delta * state.factor * 0.25;
+            });
+            globalScrollVelocity += Math.abs(delta);
+        });
+
+        const stiffness = 0.15; 
+        const damping = 0.75;   
+        const maxDisplacement = 40; 
 
         function animate() {
-            const newScroll = window.scrollY;
-            const delta = newScroll - currentScroll;
-            currentScroll = newScroll;
+            globalScrollVelocity *= 0.8; 
+            let jitterIntensity = Math.min(globalScrollVelocity * 0.015, 1.2);
 
-            velocity += delta;
-            velocity *= 0.82; // 稍微增加一點摩擦力，讓動作更俐落
+            states.forEach(state => {
+                const springForce = -stiffness * state.currentY;
+                state.velocity = (state.velocity + springForce) * damping;
+                state.currentY += state.velocity;
 
-            movers.forEach(mover => {
-                const factor = parseFloat(mover.dataset.wobbleFactor);
-                // 位移量乘數
-                let yPos = velocity * factor * -1.2;
-                yPos = Math.max(-100, Math.min(100, yPos)); // 位移極限
+                if (state.currentY > maxDisplacement) {
+                    state.currentY = maxDisplacement;
+                    state.velocity *= -0.5;
+                } else if (state.currentY < -maxDisplacement) {
+                    state.currentY = -maxDisplacement;
+                    state.velocity *= -0.5;
+                }
 
-                if (Math.abs(velocity) < 0.05) {
-                    mover.style.transform = `translateY(0px)`;
+                if (Math.abs(state.currentY) < 0.01 && Math.abs(state.velocity) < 0.01 && jitterIntensity < 0.01) {
+                    state.element.style.transform = `translate(0px, 0px)`;
+                    state.currentY = 0;
+                    state.velocity = 0;
                 } else {
-                    mover.style.transform = `translateY(${yPos}px)`;
+                    let jitterX = 0;
+                    let jitterY = 0;
+                    
+                    if (jitterIntensity > 0.05) {
+                        jitterX = (Math.random() - 0.5) * jitterIntensity;
+                        jitterY = (Math.random() - 0.5) * jitterIntensity;
+                    }
+                    
+                    state.element.style.transform = `translate(${jitterX}px, ${-state.currentY + jitterY}px)`;
                 }
             });
             requestAnimationFrame(animate);
