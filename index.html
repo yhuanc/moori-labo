@@ -97,7 +97,7 @@
     fetch(API_URL)
     .then(response => response.json())
     .then(data => {
-        // --- 處理 LandingArea ---
+        // --- 第一部分：處理 LandingArea ---
         if (data.LandingArea) {
             const landingMap = {
                 'HeroSubtitle': 'hero-subtitle',
@@ -131,7 +131,7 @@
             }
         }
 
-        // --- 處理 Illustrations ---
+        // --- 第二部分：處理 Illustrations ---
         const illustrationsContainer = document.getElementById("illustrations-container");
         if (data.Illustrations && illustrationsContainer) {
             illustrationsContainer.innerHTML = ""; 
@@ -165,12 +165,22 @@
                 } else if (type === 'text') {
                     illustrationsContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-between items-start p-0 overflow-hidden h-full w-full"><div class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full whitespace-pre-line pr-2 mb-2 flex-shrink-0">${item.IllusDescription || ''}</div></div>`;
                 } else if (type === 'blank') {
-                    illustrationsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    // 🌟 確保保留空白格，並加上彩蛋功能
+                    if (imageUrl) {
+                        illustrationsContainer.innerHTML += `
+                            <a href="${targetLink}" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair hidden md:block">
+                                <div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-0 group-hover:opacity-100 z-20">
+                                    <img src="${imageUrl}" class="w-full h-full object-cover">
+                                </div>
+                            </a>`;
+                    } else {
+                        illustrationsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    }
                 }
             });
         }
 
-        // --- 處理 Projects ---
+        // --- 第三部分：處理 Projects ---
         const projectsContainer = document.getElementById("projects-container");
         if (data.Projects && projectsContainer) {
             projectsContainer.innerHTML = "";
@@ -204,23 +214,34 @@
                 } else if (type === 'text') {
                     projectsContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-between items-start p-0 overflow-hidden h-full w-full"><div class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full whitespace-pre-line pr-2 mb-2 flex-shrink-0">${item.ProjectDescription || ''}</div></div>`;
                 } else if (type === 'blank') {
-                    projectsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    // 🌟 確保保留空白格，並加上彩蛋功能
+                    if (imageUrl) {
+                        projectsContainer.innerHTML += `
+                            <a href="${targetLink}" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair hidden md:block">
+                                <div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-0 group-hover:opacity-100 z-20">
+                                    <img src="${imageUrl}" class="w-full h-full object-cover">
+                                </div>
+                            </a>`;
+                    } else {
+                        projectsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    }
                 }
             });
         }
         
-        // --- 處理 Courses ---
+        // --- 第四部分：處理 Courses ---
         const coursesContainer = document.getElementById("courses-container");
         if (data.Courses && coursesContainer) {
             coursesContainer.innerHTML = "";
             data.Courses.forEach((item) => {
                 const type = item.Type ? item.Type.toLowerCase().trim() : '';
                 const wobble = item.WobbleFactor ? `data-wobble-factor="${item.WobbleFactor}"` : '';
+                const imageUrl = item.CourseImg || ''; 
 
                 if (type === 'image') {
                     coursesContainer.innerHTML += `
                         <div ${wobble} class="jelly-mover block relative group aspect-square bg-stone-200 overflow-hidden">
-                            <img src="${item.CourseImg}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-in-out">
+                            <img src="${imageUrl}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-in-out">
                             <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none">
                                 ${item.CourseStatus ? `<div class="absolute bottom-0 left-0 pb-[15px] pl-[15px] text-left w-full"><span class="text-white text-[10px] tracking-widest uppercase font-mono drop-shadow-md">[ ${item.CourseStatus} ]</span></div>` : ''}
                             </div>
@@ -232,11 +253,23 @@
                 } else if (type === 'form') {
                     coursesContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-center items-center p-4 bg-stone-100 hover:bg-stone-200 transition duration-500"><a href="${item.FormLink || '#'}" target="_blank" class="text-xs tracking-widest text-stone-600 hover:text-stone-900 uppercase border-b border-stone-400 hover:border-stone-900 pb-1 transition duration-300">Apply / Form</a></div>`;
                 } else if (type === 'blank') {
-                    coursesContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    // 🌟 確保保留空白格，並加上彩蛋功能
+                    if (imageUrl) {
+                        const targetLink = item.FormLink ? item.FormLink : '#';
+                        coursesContainer.innerHTML += `
+                            <a href="${targetLink}" target="_blank" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 hidden md:block cursor-pointer">
+                                <div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-0 group-hover:opacity-100 z-20 bg-stone-200">
+                                    <img src="${imageUrl}" class="w-full h-full object-cover">
+                                </div>
+                            </a>`;
+                    } else {
+                        coursesContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
+                    }
                 }
             });
         }
 
+        // 啟動最終雙重物理引擎
         initJellyWobble();
     });
 
@@ -264,8 +297,6 @@
         });
 
         let lastScrollY = window.scrollY;
-        
-        // 🌟 [新增引擎]：專門用來計算「正在捲動」的激烈程度，用來觸發微震
         let globalScrollVelocity = 0;
 
         window.addEventListener('scroll', () => {
