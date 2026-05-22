@@ -285,7 +285,7 @@
         initJellyWobble();
     });
 
-    // 🚀 終極雙引擎：Q彈物理 (Spring) + 微震阻尼 (Jitter)
+    // 🚀 終極雙引擎：Q彈物理 (Spring) + 微震阻尼 (Jitter) —— 【優雅慢速版】
     function initJellyWobble() {
         const movers = document.querySelectorAll('.jelly-mover');
         if (movers.length === 0) return;
@@ -315,17 +315,22 @@
             lastScrollY = currentScrollY;
 
             states.forEach(state => {
-                state.velocity += delta * state.factor * 0.25;
+                // 推力稍微調小一點點，配合慢速動態
+                state.velocity += delta * state.factor * 0.15;
             });
             globalScrollVelocity += Math.abs(delta);
         });
 
-        const stiffness = 0.15; 
-        const damping = 0.75;   
+        // 🌟 核心速度調整區
+        const stiffness = 0.04; // 【改小】彈簧變極軟，拉回來的速度變得非常緩慢優雅 (原本 0.15)
+        const damping = 0.8;   // 【改大】因為彈簧變軟了，摩擦力要變小，它才能慢慢地「ㄉㄨㄞ」完 (原本 0.75)
         const maxDisplacement = 40; 
 
         function animate() {
-            globalScrollVelocity *= 0.8; 
+            // 【改大】讓捲動速度衰減變慢，微震感會更綿長柔和 (原本 0.8)
+            globalScrollVelocity *= 0.85; 
+            
+            // 【改小】調低微震強度與極限，讓抖動不會那麼急躁 (原本 0.015, 1.2)
             let jitterIntensity = Math.min(globalScrollVelocity * 0.015, 1.2);
 
             states.forEach(state => {
@@ -361,6 +366,7 @@
         }
         animate();
     }
+       
     </script>
 </body>
 </html>
