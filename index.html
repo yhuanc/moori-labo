@@ -165,17 +165,7 @@
                 } else if (type === 'text') {
                     illustrationsContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-between items-start p-0 overflow-hidden h-full w-full"><div class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full whitespace-pre-line pr-2 mb-2 flex-shrink-0">${item.IllusDescription || ''}</div></div>`;
                 } else if (type === 'blank') {
-                    // 🌟 插畫區彩蛋語法
-                    if (imageUrl) {
-                        illustrationsContainer.innerHTML += `
-                            <a href="${targetLink}" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair hidden md:block">
-                                <div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-0 group-hover:opacity-100 z-20">
-                                    <img src="${imageUrl}" class="w-full h-full object-cover">
-                                </div>
-                            </a>`;
-                    } else {
-                        illustrationsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
-                    }
+                    illustrationsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
                 }
             });
         }
@@ -214,17 +204,7 @@
                 } else if (type === 'text') {
                     projectsContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-between items-start p-0 overflow-hidden h-full w-full"><div class="text-xs text-stone-500 tracking-wide leading-relaxed text-left w-full whitespace-pre-line pr-2 mb-2 flex-shrink-0">${item.ProjectDescription || ''}</div></div>`;
                 } else if (type === 'blank') {
-                    // 🌟 專案區彩蛋語法
-                    if (imageUrl) {
-                        projectsContainer.innerHTML += `
-                            <a href="${targetLink}" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 cursor-crosshair hidden md:block">
-                                <div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-0 group-hover:opacity-100 z-20">
-                                    <img src="${imageUrl}" class="w-full h-full object-cover">
-                                </div>
-                            </a>`;
-                    } else {
-                        projectsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
-                    }
+                    projectsContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
                 }
             });
         }
@@ -252,18 +232,7 @@
                 } else if (type === 'form') {
                     coursesContainer.innerHTML += `<div ${wobble} class="jelly-mover aspect-square flex flex-col justify-center items-center p-4 bg-stone-100 hover:bg-stone-200 transition duration-500"><a href="${item.FormLink || '#'}" target="_blank" class="text-xs tracking-widest text-stone-600 hover:text-stone-900 uppercase border-b border-stone-400 hover:border-stone-900 pb-1 transition duration-300">Apply / Form</a></div>`;
                 } else if (type === 'blank') {
-                    // 🌟 課程區彩蛋語法
-                    if (item.CourseImg) {
-                        const targetLink = item.FormLink ? item.FormLink : '#';
-                        coursesContainer.innerHTML += `
-                            <a href="${targetLink}" target="_blank" ${wobble} class="jelly-mover block relative aspect-square group z-0 hover:z-50 hidden md:block cursor-pointer">
-                                <div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-0 group-hover:opacity-100 z-20 bg-stone-200">
-                                    <img src="${item.CourseImg}" class="w-full h-full object-cover">
-                                </div>
-                            </a>`;
-                    } else {
-                        coursesContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
-                    }
+                    coursesContainer.innerHTML += `<div class="aspect-square hidden md:block"></div>`;
                 }
             });
         }
@@ -271,52 +240,99 @@
         initJellyWobble();
     });
 
-    // 🚀 加上微震感的強力物理引擎 (Jitter Physics Engine)
+    // 🚀 終極雙引擎：Q彈物理 (Spring) + 微震阻尼 (Jitter)
     function initJellyWobble() {
         const movers = document.querySelectorAll('.jelly-mover');
         if (movers.length === 0) return;
 
-        movers.forEach(mover => {
+        // 初始化每個元素的狀態
+        const states = Array.from(movers).map(mover => {
             mover.style.transition = 'none';
             mover.style.willChange = 'transform';
-            if (!mover.dataset.wobbleFactor) {
-                mover.dataset.wobbleFactor = (Math.random() * 0.6 + 0.1).toFixed(2);
-            }
+            
+            // 使用較內斂的設定 (手動設定優先，否則給予 0.1~0.3 的隨機值)
+            let factor = mover.dataset.wobbleFactor 
+                ? parseFloat(mover.dataset.wobbleFactor)
+                : (Math.random() * 0.2 + 0.1); 
+
+            return {
+                element: mover,
+                factor: factor,
+                currentY: 0,
+                velocity: 0
+            };
         });
 
-        let currentScroll = window.scrollY;
-        let velocity = 0;
+        let lastScrollY = window.scrollY;
+        
+        // 🌟 [新增引擎]：專門用來計算「正在捲動」的激烈程度，用來觸發微震
+        let globalScrollVelocity = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            const delta = currentScrollY - lastScrollY;
+            lastScrollY = currentScrollY;
+
+            // 1. 給予彈簧推力 (Q彈的來源)
+            states.forEach(state => {
+                state.velocity += delta * state.factor * 0.25;
+            });
+            
+            // 2. 累積捲動的絕對速度 (抖動的來源)
+            globalScrollVelocity += Math.abs(delta);
+        });
+
+        // 彈簧物理參數 (內斂高級感設定)
+        const stiffness = 0.15; 
+        const damping = 0.75;   
+        const maxDisplacement = 40; 
 
         function animate() {
-            const newScroll = window.scrollY;
-            const delta = newScroll - currentScroll;
-            currentScroll = newScroll;
+            // 讓捲動速度快速衰減 (這代表只有在手指正在滑的時候，抖動才有感)
+            globalScrollVelocity *= 0.8; 
 
-            velocity += delta;
-            velocity *= 0.82; 
+            // 計算當前的微震強度 (極度克制：最多不超過 1.2 像素的抖動)
+            let jitterIntensity = Math.min(globalScrollVelocity * 0.015, 1.2);
 
-            // 🌟 計算全域的「微震強度 (Jitter Intensity)」
-            let jitterIntensity = Math.min(Math.abs(velocity) * 0.01, 1.0);
+            states.forEach(state => {
+                // --- 物理引擎 1：計算彈簧位移 ---
+                const springForce = -stiffness * state.currentY;
+                state.velocity = (state.velocity + springForce) * damping;
+                state.currentY += state.velocity;
 
-            movers.forEach(mover => {
-                const factor = parseFloat(mover.dataset.wobbleFactor);
-                // 這是主體的上下位移量
-                let yPos = velocity * factor * -1.2;
-                yPos = Math.max(-40, Math.min(40, yPos)); 
+                if (state.currentY > maxDisplacement) {
+                    state.currentY = maxDisplacement;
+                    state.velocity *= -0.5;
+                } else if (state.currentY < -maxDisplacement) {
+                    state.currentY = -maxDisplacement;
+                    state.velocity *= -0.5;
+                }
 
-                if (Math.abs(velocity) < 0.05) {
-                    // 速度趨近停止時，精準歸零，絕不殘留抖動
-                    mover.style.transform = `translate(0px, 0px)`;
+                // --- 結合繪製 (彈簧 + 抖動) ---
+                // 當彈簧停止 且 沒有在捲動時，精準歸零
+                if (Math.abs(state.currentY) < 0.01 && Math.abs(state.velocity) < 0.01 && jitterIntensity < 0.01) {
+                    state.element.style.transform = `translate(0px, 0px)`;
+                    state.currentY = 0;
+                    state.velocity = 0;
                 } else {
-                    // 🌟 產生極微小的隨機 XY 偏移，融入主位移中
-                    let jitterX = (Math.random() - 0.5) * jitterIntensity;
-                    let jitterY = (Math.random() - 0.5) * jitterIntensity;
+                    // 🌟 物理引擎 2：計算隨機 XY 微震
+                    let jitterX = 0;
+                    let jitterY = 0;
                     
-                    mover.style.transform = `translate(${jitterX}px, ${yPos + jitterY}px)`;
+                    if (jitterIntensity > 0.05) {
+                        jitterX = (Math.random() - 0.5) * jitterIntensity;
+                        jitterY = (Math.random() - 0.5) * jitterIntensity;
+                    }
+                    
+                    // 把 X微震、Y微震、Y彈簧位移 全部加在一起！
+                    state.element.style.transform = `translate(${jitterX}px, ${-state.currentY + jitterY}px)`;
                 }
             });
+
             requestAnimationFrame(animate);
         }
+
+        // 啟動引擎
         animate();
     }
     </script>
