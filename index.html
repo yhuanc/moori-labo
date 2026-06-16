@@ -144,6 +144,7 @@
                 const targetLink = item.ID ? `pagecontent.html?type=illus&id=${item.ID}` : '#';
                 const title = item.IllusTitle || '';
                 const imageUrl = item.IllusImg || ''; 
+                const hoverImageUrl = item.IllusHoverImg || ''; // 新增的 Hover 圖片欄位
                 const wobble = item.WobbleFactor ? `data-wobble-factor="${item.WobbleFactor}"` : '';
 
                 if (type === 'image') {
@@ -152,7 +153,10 @@
                             <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 z-10 pointer-events-none">
                                 <h3 class="${titleTextClass}" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3>
                             </div>
-                            <div class="absolute inset-0 transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0 z-20"><img src="${imageUrl}" class="w-full h-full object-cover"></div>
+                            
+                            ${hoverImageUrl ? `<div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-0 group-hover:opacity-100 z-20"><img src="${hoverImageUrl}" class="w-full h-full object-cover"></div>` : ''}
+
+                            <div class="absolute inset-0 transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0 z-30"><img src="${imageUrl}" class="w-full h-full object-cover"></div>
                         </a>`;
                 } else if (type === 'title') {
                     if (imageUrl) {
@@ -192,6 +196,7 @@
                 const targetLink = item.ID ? `pagecontent.html?type=project&id=${item.ID}` : '#';
                 const title = item.ProjectName || '';
                 const imageUrl = item.ProjectImg || ''; 
+                const hoverImageUrl = item.ProjectHoverImg || ''; // 新增的 Hover 圖片欄位
                 const wobble = item.WobbleFactor ? `data-wobble-factor="${item.WobbleFactor}"` : '';
 
                 if (type === 'image') {
@@ -200,7 +205,10 @@
                             <div class="absolute inset-0 flex flex-col justify-start items-start pr-4 md:pr-6 pl-0 pb-4 md:pb-6 pt-0 bg-stone-50 z-10 pointer-events-none">
                                 <h3 class="${titleTextClass}" style="font-family: 'Outfit', 'source-han-sans-tw-variable', sans-serif;">${title}</h3>
                             </div>
-                            <div class="absolute inset-0 transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0 z-20"><img src="${imageUrl}" class="w-full h-full object-cover"></div>
+                            
+                            ${hoverImageUrl ? `<div class="absolute inset-0 transition-opacity duration-700 ease-out opacity-0 group-hover:opacity-100 z-20"><img src="${hoverImageUrl}" class="w-full h-full object-cover"></div>` : ''}
+
+                            <div class="absolute inset-0 transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0 z-30"><img src="${imageUrl}" class="w-full h-full object-cover"></div>
                         </a>`;
                 } else if (type === 'title') {
                     if (imageUrl) {
@@ -231,7 +239,7 @@
             });
         }
         
-        // --- 第四部分：處理 Courses ---
+        // --- 第四部分：處理 Courses (維持不變) ---
         const coursesContainer = document.getElementById("courses-container");
         if (data.Courses && coursesContainer) {
             coursesContainer.innerHTML = "";
